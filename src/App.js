@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import { Route, Navigate, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import Header from "./components/header/header";
+import Tasks from "./components/tasks/tasks";
+import RegisterForm from "./components/registerForm/registerForm";
+import auth from "./services/authService";
+import "./App.css";
+import LoginForm from "./components/loginForm/loginForm";
+import Logout from "./components/logout/logout";
+import Exchange from "./components/exchange/exchange";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  state = {};
+
+  componentDidMount() {
+    const user = auth.getCurrentUser();
+    this.setState({ user });
+  }
+
+  render() {
+    const { user } = this.state;
+
+    return (
+      <React.Fragment>
+        <Exchange />
+
+        {/* <ToastContainer />
+        <Header user={user} />
+        <main className="container">
+          <Routes>
+            <Route path="/register" component={RegisterForm}></Route>
+            <Route path="/login" component={LoginForm}></Route>
+            <Route path="/logout" component={Logout}></Route>
+            <Route
+              path="/"
+              element={<Navigate replace to="/tasks" component={Tasks} />}
+            ></Route>
+
+            <Navigate to="/not-found" />
+          </Routes>
+        </main> */}
+      </React.Fragment>
+    );
+  }
 }
 
 export default App;
