@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import MyVerticallyCenteredModal from "../popup/popup";
+import Popup_Rewards from "./../popup/popup_rewards";
 import "./exchangeCard.css";
 
 const RewardsTable = ({ rewards, onDelete }) => {
@@ -24,12 +24,12 @@ const RewardsTable = ({ rewards, onDelete }) => {
               <p className="card-text">{r.genre}</p>
             </div>
           </div>
-          <MyVerticallyCenteredModal
+          <Popup_Rewards
             show={modalOpen}
             onClose={toggleModal}
             onConfirm={handleConfirm}
             onDelete={onDelete}
-            selectedReward={r}
+            selectedItem={r}
           />
         </div>
       ))}

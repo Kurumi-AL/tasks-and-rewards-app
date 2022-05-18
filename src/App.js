@@ -23,7 +23,7 @@ class App extends Component {
 
     return (
       <React.Fragment>
-        <Exchange />
+        <Tasks />
 
         {/* <ToastContainer />
         <Header user={user} />

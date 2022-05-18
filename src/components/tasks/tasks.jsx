@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import SearchBox from "../../elements/searchBox";
 import TasksTable from "./tasksTable";
 import Pagination from "../../elements/pagination";
+import Popup_Form from "../popup/popup_form";
 import { getTasks } from "../../services/fakeTasksData";
 import { paginate } from "./../../utils/paginate";
 import _ from "lodash";
@@ -13,6 +14,15 @@ class Tasks extends Component {
     pageSize: 8,
     sortColumn: { path: "name", order: "asc" },
     searchQuery: "",
+    modalOpen: false,
+  };
+
+  toggleModal = () => {
+    this.setState({ modalOpen: !this.state.modalOpen });
+  };
+
+  handleConfirm = () => {
+    console.log("Added a new task");
   };
 
   handleAddPoint = (task) => {
@@ -95,13 +105,19 @@ class Tasks extends Component {
 
         <div className="text-center">
           <button
-            onClick={this.handleAddNewTask}
+            onClick={this.toggleModal}
             type="button"
             className="btn btn-success btn-lg text-center"
           >
             Add a new task!
           </button>
         </div>
+
+        <Popup_Form
+          show={this.state.modalOpen}
+          onClose={this.toggleModal}
+          onConfirm={this.handleConfirm}
+        />
       </React.Fragment>
     );
   }

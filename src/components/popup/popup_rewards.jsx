@@ -2,7 +2,7 @@ import { Modal } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import "./popup.css";
 
-function MyVerticallyCenteredModal(props) {
+function Popup_Rewards(props) {
   return (
     <Modal
       {...props}
@@ -12,7 +12,7 @@ function MyVerticallyCenteredModal(props) {
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {props.selectedReward.point} pt
+          {props.selectedItem.point} pt
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -32,7 +32,7 @@ function MyVerticallyCenteredModal(props) {
             </Button>
             <Button
               className="btn-popup"
-              onClick={() => props.onDelete(props.selectedReward)}
+              onClick={() => props.onDelete(props.selectedItem)}
             >
               Delete
             </Button>
@@ -46,4 +46,4 @@ function MyVerticallyCenteredModal(props) {
   );
 }
 
-export default MyVerticallyCenteredModal;
+export default Popup_Rewards;

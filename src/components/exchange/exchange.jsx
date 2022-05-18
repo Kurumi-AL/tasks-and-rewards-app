@@ -85,7 +85,7 @@ class Exchange extends Component {
 
         <button
           type="button"
-          className="btn btn-secondary btn-add"
+          className="btn btn-success btn-add"
           onClick={() => this.handleAddNewReward()}
         >
           Add a new reward
