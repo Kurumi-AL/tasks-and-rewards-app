@@ -4,12 +4,14 @@ import TasksTable from "./tasksTable";
 import Pagination from "../../elements/pagination";
 import Popup_Form from "../popup/popup_form";
 import { getTasks } from "../../services/fakeTasksData";
+import { getGenres } from "../../services/fakeGenreService";
 import { paginate } from "./../../utils/paginate";
 import _ from "lodash";
 
 class Tasks extends Component {
   state = {
     tasks: getTasks(),
+    genres: getGenres(),
     currentPage: 1,
     pageSize: 8,
     sortColumn: { path: "name", order: "asc" },
@@ -23,6 +25,7 @@ class Tasks extends Component {
 
   handleConfirm = () => {
     console.log("Added a new task");
+    this.toggleModal();
   };
 
   handleAddPoint = (task) => {
@@ -115,6 +118,7 @@ class Tasks extends Component {
 
         <Popup_Form
           show={this.state.modalOpen}
+          genres={this.state.genres}
           onClose={this.toggleModal}
           onConfirm={this.handleConfirm}
         />

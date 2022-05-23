@@ -5,12 +5,16 @@ import RewardsTable from "./rewardsTable";
 import { toast } from "react-toastify";
 import _ from "lodash";
 import "./exchange.css";
+import Popup_Form from "../popup/popup_form";
+import { getGenres } from "../../services/fakeGenreService";
 
 class Exchange extends Component {
   state = {
     rewards: getRewards(),
+    genres: getGenres(),
     sortColumn: { order: "asc" },
     searchQuery: "",
+    isAddFormModalOpen: false,
   };
 
   handleSort = (sortColumn) => {
@@ -21,9 +25,32 @@ class Exchange extends Component {
     this.setState({ searchQuery: query });
   };
 
+  handleAddNewReward = () => {
+    const isAddFormModalOpen = !this.state.isAddFormModalOpen;
+    this.setState({ isAddFormModalOpen });
+  };
+
+  handleDelete = async (selectedReward) => {
+    console.log("Handle delete");
+    const originalRewards = this.state.rewards;
+    const rewards = originalRewards.filter((r) => r.id !== selectedReward.id);
+    this.setState({ rewards });
+    try {
+      await deleteReward(selectedReward.id);
+    } catch (ex) {
+      if (ex.response && ex.response.status === 404)
+        toast.error("This reward has already been deleted.");
+
+      this.setState({ rewards: originalRewards });
+    }
+  };
+
+  handleToggleModal = (rewards) => {
+    this.setState({ rewards });
+  };
+
   getPageData = () => {
     const { sortColumn, searchQuery, rewards: allRewards } = this.state;
-
     let filtered = allRewards;
     if (searchQuery)
       filtered = allRewards.filter((r) =>
@@ -40,28 +67,9 @@ class Exchange extends Component {
     this.handleSort(sortColumn);
   };
 
-  handleAddNewReward = () => {
-    console.log("add");
-  };
-
-  handleDelete = async (selectedReward) => {
-    const originalRewards = this.state.rewards;
-    const rewards = originalRewards.filter((r) => r.id !== selectedReward.id);
-    this.setState({ rewards });
-    try {
-      await deleteReward(selectedReward.id);
-    } catch (ex) {
-      if (ex.response && ex.response.status === 404)
-        toast.error("This reward has already been deleted.");
-
-      this.setState({ rewards: originalRewards });
-    }
-  };
-
   render() {
-    const { sortColumn, searchQuery } = this.state;
+    const { sortColumn, searchQuery, genres } = this.state;
     const { totalCount, data: rewards } = this.getPageData();
-
     return (
       <div className="container">
         <div className="text-center title">
@@ -78,7 +86,7 @@ class Exchange extends Component {
         <button
           type="button"
           className="btn btn-secondary"
-          onClick={() => this.raiseSort()}
+          onClick={this.raiseSort}
         >
           Sort by point
         </button>
@@ -86,12 +94,22 @@ class Exchange extends Component {
         <button
           type="button"
           className="btn btn-success btn-add"
-          onClick={() => this.handleAddNewReward()}
+          onClick={this.handleAddNewReward}
         >
           Add a new reward
         </button>
 
-        <RewardsTable rewards={rewards} onDelete={this.handleDelete} />
+        <Popup_Form
+          show={this.state.isAddFormModalOpen}
+          onClose={this.handleAddNewReward}
+          genres={genres}
+        />
+
+        <RewardsTable
+          rewards={rewards}
+          onDelete={this.handleDelete}
+          onToggleModal={this.handleToggleModal}
+        />
       </div>
     );
   }

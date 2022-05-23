@@ -19,6 +19,18 @@ function Popup_Form(props) {
             <Form.Label>Point</Form.Label>
             <Form.Control type="number" rows={3} />
           </Form.Group>
+          <Form.Group className="mb-3" controlId="popupForm.comment">
+            <Form.Label>Comment</Form.Label>
+            <Form.Control type="textarea" rows={3} />
+          </Form.Group>
+          <Form.Group controlId="popupForm.genre">
+            <Form.Label>Genre</Form.Label>
+            <Form.Control as="select">
+              {props.genres.map((g) => (
+                <option key={g.id}>{g.name}</option>
+              ))}
+            </Form.Control>
+          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>

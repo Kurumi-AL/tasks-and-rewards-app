@@ -3,12 +3,13 @@ import { Route, Navigate, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Header from "./components/header/header";
 import Tasks from "./components/tasks/tasks";
-import RegisterForm from "./components/registerForm/registerForm";
 import auth from "./services/authService";
+import Exchange from "./components/exchange/exchange";
+import RegisterForm from "./components/registerForm/registerForm";
 import "./App.css";
 import LoginForm from "./components/loginForm/loginForm";
-import Logout from "./components/logout/logout";
-import Exchange from "./components/exchange/exchange";
+import Profile from "./components/profile/profile";
+import Home from "./components/home/home";
 
 class App extends Component {
   state = {};
@@ -23,23 +24,26 @@ class App extends Component {
 
     return (
       <React.Fragment>
-        <Tasks />
-
-        {/* <ToastContainer />
         <Header user={user} />
-        <main className="container">
+        <div className="content">
           <Routes>
-            <Route path="/register" component={RegisterForm}></Route>
-            <Route path="/login" component={LoginForm}></Route>
-            <Route path="/logout" component={Logout}></Route>
+            <Route path="/login" element={<LoginForm />} />
+            <Route path="/register" element={<RegisterForm />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/exchange" element={<Exchange />} />
+            <Route path="/profile/:id" element={<Profile />} />
+            {/* <Route path="/" element={<Home />} /> */}
+            <Route path="/" element={user ? <Tasks /> : <Home />} />
             <Route
-              path="/"
-              element={<Navigate replace to="/tasks" component={Tasks} />}
-            ></Route>
-
-            <Navigate to="/not-found" />
+              path="*"
+              element={
+                <main>
+                  <p>Error: 404</p>
+                </main>
+              }
+            />
           </Routes>
-        </main> */}
+        </div>
       </React.Fragment>
     );
   }

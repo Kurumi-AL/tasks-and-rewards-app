@@ -1,8 +1,16 @@
 .modal-backdrop {
+  opacity: 0.1 !important;
+}
+
+.modal-backdrop.show {
   opacity: 0.5 !important;
 }
 
 .btn-popup {
   width: 85px;
   margin: 10px;
+}
+
+.row {
+  margin-bottom: 0 !important;
 }

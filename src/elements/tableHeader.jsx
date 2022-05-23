@@ -17,7 +17,6 @@ class TableHeader extends Component {
 
   renderSortIcon = (column) => {
     const { sortColumn } = this.props;
-    console.log(sortColumn);
     if (sortColumn.path === undefined) return null;
     if (column.path !== sortColumn.path) return null;
     if (sortColumn.order === "asc") return <FontAwesomeIcon icon={faSortUp} />;
@@ -33,6 +32,7 @@ class TableHeader extends Component {
               className="clickable"
               key={column.path || column.key}
               onClick={() => this.raiseSort(column.path)}
+              style={{ cursor: column.path ? "pointer" : "" }}
             >
               {column.label} {this.renderSortIcon(column)}
             </th>
