@@ -1,17 +1,19 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
 import SearchBox from "../../elements/searchBox";
 import TasksTable from "./tasksTable";
 import Pagination from "../../elements/pagination";
 import Popup_Form from "../popup/popup_form";
 import { getTasks } from "../../services/fakeTasksData";
-import { getGenres } from "../../services/fakeGenreService";
 import { paginate } from "./../../utils/paginate";
+import { getCurrUser } from "./../../firebase/userService";
+import { deleteTask, addPoints } from "../../firebase/taskService";
+
 import _ from "lodash";
 
 class Tasks extends Component {
   state = {
-    tasks: getTasks(),
-    genres: getGenres(),
+    tasks: [],
+    currUser: this.props.user,
     currentPage: 1,
     pageSize: 8,
     sortColumn: { path: "name", order: "asc" },
@@ -19,8 +21,40 @@ class Tasks extends Component {
     modalOpen: false,
   };
 
+  // constructor(props) {
+  //   super(props);
+
+  //   const currentUid = props.user.uid;
+
+  //   const currUser = getCurrUser(currentUid);
+  //   this.setState({ currUser });
+  // }
+
+  componentDidMount = () => {
+    console.log("componentDidMount in tasks");
+
+    // Get current user
+    // auth.onAuthStateChanged(async (user) => {
+    //   if (user) {
+    //     const userData = await getCurrentUser(user.uid);
+    //     this.setState({ currUser: userData });
+    //   }
+    // });
+    const currUser = this.props.user;
+    this.setState({ currUser });
+    console.log("currUser: ", this.state.currUser);
+
+    // Get tasks from database
+    const tasks = this.state.currUser.tasks;
+    this.setState({ tasks });
+  };
+
   toggleModal = () => {
     this.setState({ modalOpen: !this.state.modalOpen });
+  };
+
+  updateTasks = (tasks) => {
+    this.setState({ tasks });
   };
 
   handleConfirm = () => {
@@ -28,14 +62,14 @@ class Tasks extends Component {
     this.toggleModal();
   };
 
-  handleAddPoint = (task) => {
-    console.log("added");
-  };
+  // handleAddPoint = (task) => {
+  //   console.log("added");
+  // };
 
-  handleDelete = (task) => {
-    const tasks = this.state.tasks.filter((t) => t.id !== task.id);
-    this.setState({ tasks });
-  };
+  // handleDelete = (task) => {
+  //   const tasks = this.state.tasks.filter((t) => t.id !== task.id);
+  //   this.setState({ tasks });
+  // };
 
   handleSearch = (query) => {
     this.setState({ searchQuery: query, currentPage: 1 });
@@ -75,9 +109,11 @@ class Tasks extends Component {
 
   render() {
     const { length: count } = this.state.tasks;
-    const { pageSize, currentPage, sortColumn, searchQuery } = this.state;
+    const { pageSize, currentPage, user, sortColumn, searchQuery } = this.state;
 
     const { totalCount, data: tasks } = this.getPageData();
+
+    console.log("Tasks: ", user);
 
     return (
       <React.Fragment>
@@ -90,8 +126,8 @@ class Tasks extends Component {
               <TasksTable
                 tasks={tasks}
                 sortColumn={sortColumn}
-                onAddPoint={this.handleAddPoint}
-                onDelete={this.handleDelete}
+                onAddPoints={addPoints}
+                onDelete={deleteTask}
                 onSort={this.handleSort}
               />
 
@@ -118,9 +154,10 @@ class Tasks extends Component {
 
         <Popup_Form
           show={this.state.modalOpen}
-          genres={this.state.genres}
           onClose={this.toggleModal}
-          onConfirm={this.handleConfirm}
+          path="tasks"
+          currUser={user}
+          // onConfirm={handleTaskSubmit}
         />
       </React.Fragment>
     );

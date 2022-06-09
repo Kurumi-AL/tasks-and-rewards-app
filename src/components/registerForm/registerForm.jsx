@@ -1,52 +1,69 @@
-import React, { Component } from "react";
-import Joi from "joi-browser";
-import Form from "../../elements/form";
-import * as userService from "../../services/userService";
-import auth from "../../services/authService";
+import React, { useEffect, useState } from "react";
+import { auth } from "../../firebase-config";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  registerWithEmailAndPassword,
+  signInWithGoogle,
+} from "../../firebase/logService";
+import "./registerForm.css";
 
-class RegisterForm extends Form {
-  state = {
-    data: { username: "", password: "", name: "" },
-    errors: {},
+const RegisterForm = (props) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
+
+  const register = () => {
+    if (!name) alert("Please enter name");
+    registerWithEmailAndPassword(name, email, password, props.onUser);
   };
 
-  schema = {
-    username: Joi.string()
-      .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
-      .required()
-      .label("Username"),
-    password: Joi.string().min(5).required().label("Password"),
-    name: Joi.string().required().label("Name"),
-  };
+  useEffect(() => {
+    if (loading) return;
+    if (user) navigate("/tasks");
+  }, [user, loading]);
 
-  doSubmit = async () => {
-    try {
-      const response = await userService.register(this.state.data);
-      auth.loginWithJwt(response.headers["x-auth-token"]);
-      window.location = "/";
-    } catch (ex) {
-      if (ex.response && ex.response.status === 400) {
-        const errors = { ...this.state.errors };
-        errors.username = ex.response.data;
-        this.setState({ errors });
-      }
-    }
-  };
-
-  render() {
-    return (
-      <div className="container">
-        <h1>Register</h1>
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInput("username", "Username")}
-          {this.renderInput("password", "Password", "password")}
-          {this.renderInput("name", "Name")}
-
-          {this.renderButton("Register")}
-        </form>
+  return (
+    <div className="register">
+      <div className="register__container">
+        <input
+          type="text"
+          className="register__textBox"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Full Name"
+        />
+        <input
+          type="text"
+          className="register__textBox"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email Address"
+        />
+        <input
+          type="password"
+          className="register__textBox"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+        />
+        <button className="register__btn" onClick={register}>
+          Register
+        </button>
+        <button
+          className="register__btn register__google"
+          onClick={signInWithGoogle}
+        >
+          Register with Google
+        </button>
+        <div>
+          Already have an account? <Link to="/login">Login</Link> now.
+        </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default RegisterForm;

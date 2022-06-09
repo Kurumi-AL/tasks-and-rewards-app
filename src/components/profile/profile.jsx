@@ -1,16 +1,14 @@
 import React, { Component } from "react";
+import { useParams } from "react-router-dom";
 
-class Profile extends Component {
-  state = {};
+const Profile = ({ user }) => {
+  const { id } = useParams();
 
-  render() {
-    const { user } = this.props;
-    return (
-      <div>
-        <h1>Profile of {user}</h1>
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <h1>Profile of {user.name}</h1>
+    </div>
+  );
+};
 
 export default Profile;

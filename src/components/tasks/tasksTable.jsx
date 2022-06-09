@@ -4,8 +4,8 @@ import TableHeader from "../../elements/tableHeader";
 class TasksTable extends Component {
   columns = [
     { path: "name", label: "Task name" },
-    { path: "point", label: "Point" },
-    { key: "add", label: "Add point" },
+    { path: "points", label: "Points" },
+    { key: "add", label: "Add points" },
     { key: "delete", label: "Delete" },
   ];
 
@@ -19,7 +19,7 @@ class TasksTable extends Component {
   };
 
   render() {
-    const { tasks, onAddPoint, onDelete, onSort } = this.props;
+    const { tasks, onAddPoints, onDelete, onSort } = this.props;
 
     return (
       <table className="table">
@@ -34,12 +34,12 @@ class TasksTable extends Component {
             <tr key={task.id}>
               <td style={{ width: 55 + "%" }}>{task.name}</td>
               <td className="text-end" style={{ width: 15 + "%" }}>
-                {task.point} pt
+                {task.points} pt
               </td>
               <td className="text-center" style={{ width: 15 + "%" }}>
                 {" "}
                 <button
-                  onClick={() => onAddPoint(task)}
+                  onClick={() => onAddPoints(task)}
                   type="btn btn-sm"
                   className="btn btn-outline-dark"
                 >

@@ -6,15 +6,24 @@ import { toast } from "react-toastify";
 import _ from "lodash";
 import "./exchange.css";
 import Popup_Form from "../popup/popup_form";
-import { getGenres } from "../../services/fakeGenreService";
 
 class Exchange extends Component {
   state = {
-    rewards: getRewards(),
-    genres: getGenres(),
+    rewards: [],
+    currUser: null,
     sortColumn: { order: "asc" },
     searchQuery: "",
     isAddFormModalOpen: false,
+  };
+
+  componentDidMount = () => {
+    if (!this.props.user) return;
+
+    const currUser = this.props.user;
+    this.setState({ currUser });
+
+    const rewards = currUser.rewards;
+    this.setState({ rewards });
   };
 
   handleSort = (sortColumn) => {
@@ -68,7 +77,7 @@ class Exchange extends Component {
   };
 
   render() {
-    const { sortColumn, searchQuery, genres } = this.state;
+    const { currUser, sortColumn, searchQuery } = this.state;
     const { totalCount, data: rewards } = this.getPageData();
     return (
       <div className="container">
@@ -102,7 +111,10 @@ class Exchange extends Component {
         <Popup_Form
           show={this.state.isAddFormModalOpen}
           onClose={this.handleAddNewReward}
-          genres={genres}
+          p
+          path="rewards"
+          currUser={currUser}
+          // genres={genres}
         />
 
         <RewardsTable

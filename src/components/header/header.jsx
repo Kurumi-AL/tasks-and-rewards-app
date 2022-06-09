@@ -1,16 +1,20 @@
-import React, { Component } from "react";
-import { NavLink, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, Link, generatePath } from "react-router-dom";
+import { logout } from "../../firebase/logService";
 import Tasks from "../tasks/tasks";
 import Exchange from "../exchange/exchange";
 import logo from "../../pictures/logo.jpg";
 
 import "./header.css";
+import { Navbar } from "react-bootstrap";
 
 const Header = ({ user }) => {
+  console.log(user);
+
   return (
     <div className="header">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <Link className="navbar-brand" to="/">
+        <Link className="navbar-brand" to={user ? "/tasks" : "/"}>
           <img src={logo} className="photo"></img>
         </Link>
         <button
@@ -44,12 +48,24 @@ const Header = ({ user }) => {
                 <NavLink className="nav-item nav-link" to="/exchange">
                   Exchange
                 </NavLink>
-                <NavLink className="nav-item nav-link" to="/profile">
-                  {user.name}
+                <Navbar.Collapse className="justify-content-end">
+                  <Navbar.Text> Logging in as {user.name}</Navbar.Text>
+                </Navbar.Collapse>
+                <NavLink
+                  className="nav-item nav-link justify-content-end"
+                  to="/profile/${user.uid}"
+                >
+                  Profile
                 </NavLink>
-                <NavLink className="nav-item nav-link" to="/logout">
-                  Logout
-                </NavLink>
+                <Navbar.Collapse className="justify-content-end">
+                  <Navbar.Text>{user.totalPoints} pt</Navbar.Text>
+                </Navbar.Collapse>
+                <Navbar.Collapse
+                  className="justify-content-end"
+                  onClick={logout}
+                >
+                  <Navbar.Text>Logout</Navbar.Text>
+                </Navbar.Collapse>
               </React.Fragment>
             )}
           </div>

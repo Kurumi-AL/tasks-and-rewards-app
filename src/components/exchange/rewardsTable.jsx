@@ -31,11 +31,11 @@ class RewardsTable extends Component {
             onClick={() => this.raiseToggleModal(r)}
           >
             <div className="card bg-light">
-              <div className="card-header">{r.point} pt</div>
+              <div className="card-header">{r.points} pt</div>
               <div className="card-body">
                 <h5 className="card-title">{r.name}</h5>
                 <p className="card-text">{r.comment}</p>
-                <p className="card-text">{r.genre.name}</p>
+                {/* <p className="card-text">{r.genre.name}</p> */}
               </div>
             </div>
             <Popup_Rewards
