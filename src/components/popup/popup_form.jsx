@@ -1,16 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Modal } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { Form } from "react-bootstrap";
 import { addTask } from "../../firebase/taskService";
 import { addReward } from "../../firebase/rewardService";
+import { userContext } from "../../utils/userContext";
 import "./popup.css";
 
 function Popup_Form(props) {
   const onClose = props.onClose;
-
   const path = props.path;
-  const currUser = props.currUser;
+  const currUser = useContext(userContext);
+
   const [newTitle, setNewTitle] = useState("");
   const [newPoint, setNewPoint] = useState(0);
   const [newComment, setNewComment] = useState("");

@@ -15,7 +15,9 @@ import {
   where,
   addDoc,
   setDoc,
+  CollectionReference,
 } from "firebase/firestore";
+import { element } from "prop-types";
 
 // Login with google account
 const signInWithGoogle = async (onUser) => {
@@ -108,6 +110,16 @@ const logout = async () => {
   } catch (err) {
     alert(err.message);
   }
+};
+
+// To get document id
+const getDocumentId = async () => {
+  let id;
+  let value = await CollectionReference.getDocuments();
+  value.documents.forEach((element) => {
+    id = element.documentId;
+  });
+  return id;
 };
 
 export {

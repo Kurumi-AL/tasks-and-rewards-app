@@ -1,130 +1,125 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { deleteReward, getRewards } from "./../../services/fakeRewardsData";
+import { toast } from "react-toastify";
+import { userContext } from "../../utils/userContext";
 import SearchBox from "../../elements/searchBox";
 import RewardsTable from "./rewardsTable";
-import { toast } from "react-toastify";
+import Popup_Form from "../popup/popup_form";
 import _ from "lodash";
 import "./exchange.css";
-import Popup_Form from "../popup/popup_form";
 
-class Exchange extends Component {
-  state = {
-    rewards: [],
-    currUser: null,
-    sortColumn: { order: "asc" },
-    searchQuery: "",
-    isAddFormModalOpen: false,
+function Exchange() {
+  const user = useContext(userContext);
+  const userRewards = user.rewards;
+
+  const [rewards, setRewards] = useState(userRewards);
+  // const [currUser, setCurrUser] = useState(user);
+  const [sortColumn, setSortColumn] = useState({ order: "asc" });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isAddFormModalOpen, setIsAddFormModalOpen] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    getPageData();
+  });
+
+  const handleSort = (sortColumn) => {
+    setSortColumn(sortColumn);
   };
 
-  componentDidMount = () => {
-    if (!this.props.user) return;
-
-    const currUser = this.props.user;
-    this.setState({ currUser });
-
-    const rewards = currUser.rewards;
-    this.setState({ rewards });
+  const handleSearch = (query) => {
+    setSearchQuery(query);
   };
 
-  handleSort = (sortColumn) => {
-    this.setState({ sortColumn });
+  const handleAddNewReward = () => {
+    const isAddFormModalOpen = !isAddFormModalOpen;
+    setIsAddFormModalOpen(isAddFormModalOpen);
   };
 
-  handleSearch = (query) => {
-    this.setState({ searchQuery: query });
-  };
-
-  handleAddNewReward = () => {
-    const isAddFormModalOpen = !this.state.isAddFormModalOpen;
-    this.setState({ isAddFormModalOpen });
-  };
-
-  handleDelete = async (selectedReward) => {
+  const handleDelete = async (selectedReward) => {
     console.log("Handle delete");
-    const originalRewards = this.state.rewards;
+    const originalRewards = rewards;
     const rewards = originalRewards.filter((r) => r.id !== selectedReward.id);
-    this.setState({ rewards });
+    setRewards(rewards);
     try {
       await deleteReward(selectedReward.id);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         toast.error("This reward has already been deleted.");
 
-      this.setState({ rewards: originalRewards });
+      setRewards(originalRewards);
     }
   };
 
-  handleToggleModal = (rewards) => {
-    this.setState({ rewards });
+  const handleToggleModal = (rewards) => {
+    setRewards(rewards);
   };
 
-  getPageData = () => {
-    const { sortColumn, searchQuery, rewards: allRewards } = this.state;
+  const getPageData = () => {
+    if (rewards.length === 0) return;
+
+    const allRewards = [...rewards];
     let filtered = allRewards;
     if (searchQuery)
       filtered = allRewards.filter((r) =>
         r.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
     const sorted = _.orderBy(filtered, ["point"], [sortColumn.order]);
-    return { totalCount: sorted.length, data: sorted };
+
+    const length = sorted.length;
+    setTotalCount(length);
+    setRewards(sorted);
+
+    // return { totalCount: sorted.length, data: sorted };
   };
 
-  raiseSort = () => {
-    const sortColumn = { ...this.state.sortColumn };
+  const raiseSort = () => {
+    const sortColumn = { ...sortColumn };
     sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
 
-    this.handleSort(sortColumn);
+    handleSort(sortColumn);
   };
 
-  render() {
-    const { currUser, sortColumn, searchQuery } = this.state;
-    const { totalCount, data: rewards } = this.getPageData();
-    return (
-      <div className="container">
-        <div className="text-center title">
-          <h3>You've worked so hard!</h3>
-          <h3>Choose rewards to exchange with your points :)</h3>
-        </div>
-
-        <SearchBox
-          className="search-box"
-          value={searchQuery}
-          onChange={this.handleSearch}
-        />
-
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={this.raiseSort}
-        >
-          Sort by point
-        </button>
-
-        <button
-          type="button"
-          className="btn btn-success btn-add"
-          onClick={this.handleAddNewReward}
-        >
-          Add a new reward
-        </button>
-
-        <Popup_Form
-          show={this.state.isAddFormModalOpen}
-          onClose={this.handleAddNewReward}
-          p
-          path="rewards"
-          currUser={currUser}
-          // genres={genres}
-        />
-
-        <RewardsTable
-          rewards={rewards}
-          onDelete={this.handleDelete}
-          onToggleModal={this.handleToggleModal}
-        />
+  return (
+    <div className="container">
+      <div className="text-center title">
+        <h3>You've worked so hard!</h3>
+        <h3>Choose rewards to exchange with your points :)</h3>
       </div>
-    );
-  }
+
+      <SearchBox
+        className="search-box"
+        value={searchQuery}
+        onChange={handleSearch}
+      />
+
+      <button type="button" className="btn btn-secondary" onClick={raiseSort}>
+        Sort by point
+      </button>
+
+      <button
+        type="button"
+        className="btn btn-success btn-add"
+        onClick={handleAddNewReward}
+      >
+        Add a new reward
+      </button>
+
+      <Popup_Form
+        show={isAddFormModalOpen}
+        onClose={handleAddNewReward}
+        path="rewards"
+        // currUser={currUser}
+        // genres={genres}
+      />
+
+      <RewardsTable
+        rewards={rewards}
+        onDelete={handleDelete}
+        onToggleModal={handleToggleModal}
+      />
+    </div>
+  );
 }
 
 export default Exchange;

@@ -22,10 +22,6 @@ export const addTask = async ({
 }) => {
   console.log("addTask: ", currUser);
 
-  // const q = query(collection(db, "users"), where("uid", "==", currUser.uid));
-  // const querySnapshot = await getDocs(q);
-  // console.log(querySnapshot);
-
   // TODO: substitute `${currUser.uid}` with documentId
   // TODO: How to get a documentId?????
   const userDoc = doc(db, "users", `${currUser.uid}`);
@@ -67,7 +63,7 @@ export const deleteTask = async ({ itemId, currUser }) => {
 
   try {
     const tasks = currUser.tasks;
-    const newTasks = tasks.filter((task) => task.id !== itemId);
+    const newTasks = tasks.filter((task) => task.timestamp !== itemId);
     const newFields = { tasks: newTasks };
     await updateDoc(userDoc, newFields);
   } catch (err) {
@@ -85,7 +81,7 @@ export const addPoints = async ({ itemId, currUser }) => {
 
   try {
     const tasks = currUser.tasks;
-    const theItem = tasks.find((task) => task.id === itemId);
+    const theItem = tasks.find((task) => task.timestamp === itemId);
     const newFields = { points: currUser.points + theItem.points };
     await updateDoc(userDoc, newFields);
   } catch (err) {

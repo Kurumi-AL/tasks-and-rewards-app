@@ -10,13 +10,15 @@ import {
 
 /** DELETE EXAMPLE */
 const people = [
-  { id: "1", name: "oja" },
+  { id: "1", name: "oja", job: { title: "react pro", salary: "1 million" } },
   { id: "3", name: "baka" },
   { id: "2", name: "oku" },
 ];
 
 // delete
 const deletePerson = (id) => {
+  const person = people.find((person) => person.id === id);
+  person.job.title = "react noob";
   return people.filter((person) => person.id !== id);
 };
 

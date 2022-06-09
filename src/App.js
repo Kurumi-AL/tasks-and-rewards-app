@@ -10,7 +10,7 @@ import Profile from "./components/profile/profile";
 import Home from "./components/home/home";
 import Reset from "./components/reset/reset";
 import { getCurrUser } from "./firebase/userService";
-// import userContext from "./utils/userContext";
+import { userContext } from "./utils/userContext";
 import "./App.css";
 
 class App extends Component {
@@ -58,34 +58,36 @@ class App extends Component {
     console.log("App render: ", user);
 
     return (
-      <React.Fragment>
-        <Header user={user} />
-        <div className="content">
-          <Routes>
-            <Route
-              path="/login"
-              element={<LoginForm onUser={this.handleUser} />}
-            />
-            <Route
-              path="/register"
-              element={<RegisterForm onUser={this.handleUser} />}
-            />
-            <Route path="/reset" element={<Reset />} />
-            <Route path="/tasks" element={<Tasks user={user} />} />
-            <Route path="/exchange" element={<Exchange user={user} />} />
-            <Route path="/profile/:id" element={<Profile user={user} />} />
-            <Route path="/" element={user ? <Tasks /> : <Home />} />
-            <Route
-              path="*"
-              element={
-                <main>
-                  <p>Error: 404</p>
-                </main>
-              }
-            />
-          </Routes>
-        </div>
-      </React.Fragment>
+      <userContext.Provider value={this.state.user}>
+        <React.Fragment>
+          <Header user={user} />
+          <div className="content">
+            <Routes>
+              <Route
+                path="/login"
+                element={<LoginForm onUser={this.handleUser} />}
+              />
+              <Route
+                path="/register"
+                element={<RegisterForm onUser={this.handleUser} />}
+              />
+              <Route path="/reset" element={<Reset />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/exchange" element={<Exchange user={user} />} />
+              <Route path="/profile/:id" element={<Profile user={user} />} />
+              <Route path="/" element={user ? <Tasks /> : <Home />} />
+              <Route
+                path="*"
+                element={
+                  <main>
+                    <p>Error: 404</p>
+                  </main>
+                }
+              />
+            </Routes>
+          </div>
+        </React.Fragment>
+      </userContext.Provider>
     );
   }
 }

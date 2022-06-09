@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from "react";
+import React, { Component, useEffect, useState, useContext } from "react";
 import SearchBox from "../../elements/searchBox";
 import TasksTable from "./tasksTable";
 import Pagination from "../../elements/pagination";
@@ -7,94 +7,64 @@ import { getTasks } from "../../services/fakeTasksData";
 import { paginate } from "./../../utils/paginate";
 import { getCurrUser } from "./../../firebase/userService";
 import { deleteTask, addPoints } from "../../firebase/taskService";
+import { userContext } from "../../utils/userContext";
 
 import _ from "lodash";
 
-class Tasks extends Component {
-  state = {
-    tasks: [],
-    currUser: this.props.user,
-    currentPage: 1,
-    pageSize: 8,
-    sortColumn: { path: "name", order: "asc" },
-    searchQuery: "",
-    modalOpen: false,
+function Tasks() {
+  const user = useContext(userContext);
+  const userTasks = user.tasks;
+
+  const [currUser, setCurrUser] = useState(user);
+  const [tasks, setTasks] = useState(userTasks);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
+  const [sortColumn, setSortColumn] = useState({ path: "name", order: "asc" });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    console.log("useEffect in tasks: ", user);
+    console.log("useEffect in tasks: ", tasks);
+
+    getPageData();
+  });
+
+  const toggleModal = () => {
+    setModalOpen(!modalOpen);
   };
 
-  // constructor(props) {
-  //   super(props);
-
-  //   const currentUid = props.user.uid;
-
-  //   const currUser = getCurrUser(currentUid);
-  //   this.setState({ currUser });
-  // }
-
-  componentDidMount = () => {
-    console.log("componentDidMount in tasks");
-
-    // Get current user
-    // auth.onAuthStateChanged(async (user) => {
-    //   if (user) {
-    //     const userData = await getCurrentUser(user.uid);
-    //     this.setState({ currUser: userData });
-    //   }
-    // });
-    const currUser = this.props.user;
-    this.setState({ currUser });
-    console.log("currUser: ", this.state.currUser);
-
-    // Get tasks from database
-    const tasks = this.state.currUser.tasks;
-    this.setState({ tasks });
+  const updateTasks = (tasks) => {
+    setTasks(tasks);
   };
 
-  toggleModal = () => {
-    this.setState({ modalOpen: !this.state.modalOpen });
-  };
-
-  updateTasks = (tasks) => {
-    this.setState({ tasks });
-  };
-
-  handleConfirm = () => {
+  const handleConfirm = () => {
     console.log("Added a new task");
     this.toggleModal();
   };
 
-  // handleAddPoint = (task) => {
-  //   console.log("added");
-  // };
-
-  // handleDelete = (task) => {
-  //   const tasks = this.state.tasks.filter((t) => t.id !== task.id);
-  //   this.setState({ tasks });
-  // };
-
-  handleSearch = (query) => {
-    this.setState({ searchQuery: query, currentPage: 1 });
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
 
-  handlePageChange = (page) => {
-    this.setState({ currentPage: page });
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
-  handleAddNewTask = () => {
+  const handleAddNewTask = () => {
     console.log("handle add new task");
   };
 
-  handleSort = (sortColumn) => {
-    this.setState({ sortColumn });
+  const handleSort = (sortColumn) => {
+    setSortColumn(sortColumn);
   };
 
-  getPageData = () => {
-    const {
-      pageSize,
-      currentPage,
-      sortColumn,
-      searchQuery,
-      tasks: allTasks,
-    } = this.state;
+  const getPageData = () => {
+    if (tasks.length === 0) return;
+
+    const allTasks = [...tasks];
 
     let filtered = allTasks;
     if (searchQuery)
@@ -103,65 +73,60 @@ class Tasks extends Component {
       );
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
-    const tasks = paginate(sorted, currentPage, pageSize);
-    return { totalCount: filtered.length, data: tasks };
+    const newTasks = paginate(sorted, currentPage, pageSize);
+
+    const totalCount = filtered.length;
+    setTotalCount(totalCount);
+    setTasks(newTasks);
+    // return { totalCount: filtered.length, data: tasks };
   };
 
-  render() {
-    const { length: count } = this.state.tasks;
-    const { pageSize, currentPage, user, sortColumn, searchQuery } = this.state;
+  return (
+    <React.Fragment>
+      <div className="container">
+        <div className="row">
+          <div className="col-2"></div>
+          <div className="col-xl">
+            <SearchBox value={searchQuery} onChange={handleSearch} />
 
-    const { totalCount, data: tasks } = this.getPageData();
+            <TasksTable
+              tasks={tasks}
+              sortColumn={sortColumn}
+              onAddPoints={addPoints}
+              onDelete={deleteTask}
+              onSort={handleSort}
+            />
 
-    console.log("Tasks: ", user);
-
-    return (
-      <React.Fragment>
-        <div className="container">
-          <div className="row">
-            <div className="col-2"></div>
-            <div className="col-xl">
-              <SearchBox value={searchQuery} onChange={this.handleSearch} />
-
-              <TasksTable
-                tasks={tasks}
-                sortColumn={sortColumn}
-                onAddPoints={addPoints}
-                onDelete={deleteTask}
-                onSort={this.handleSort}
-              />
-
-              <Pagination
-                itemsCount={totalCount}
-                pageSize={pageSize}
-                currentPage={currentPage}
-                onPageChange={this.handlePageChange}
-              />
-            </div>
-            <div className="col-2"></div>
+            <Pagination
+              itemsCount={totalCount}
+              pageSize={pageSize}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
           </div>
+          <div className="col-2"></div>
         </div>
+      </div>
 
-        <div className="text-center">
-          <button
-            onClick={this.toggleModal}
-            type="button"
-            className="btn btn-success btn-lg text-center"
-          >
-            Add a new task!
-          </button>
-        </div>
+      <div className="text-center">
+        <button
+          onClick={toggleModal}
+          type="button"
+          className="btn btn-success btn-lg text-center"
+        >
+          Add a new task!
+        </button>
+      </div>
 
-        <Popup_Form
-          show={this.state.modalOpen}
-          onClose={this.toggleModal}
-          path="tasks"
-          currUser={user}
-          // onConfirm={handleTaskSubmit}
-        />
-      </React.Fragment>
-    );
-  }
+      <Popup_Form
+        show={modalOpen}
+        onClose={toggleModal}
+        path="tasks"
+        // currUser={currUser}
+        // onConfirm={handleTaskSubmit}
+      />
+    </React.Fragment>
+  );
 }
 
 export default Tasks;
