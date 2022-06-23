@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { deleteReward, getRewards } from "./../../services/fakeRewardsData";
 import { toast } from "react-toastify";
-import { userContext } from "../../utils/userContext";
+import { UserContext } from "../../utils/userContext";
 import SearchBox from "../../elements/searchBox";
 import RewardsTable from "./rewardsTable";
 import Popup_Form from "../popup/popup_form";
@@ -9,8 +9,8 @@ import _ from "lodash";
 import "./exchange.css";
 
 function Exchange() {
-  const user = useContext(userContext);
-  const userRewards = user.rewards;
+  const [currUser, setCurrUser] = useContext(UserContext);
+  const userRewards = currUser.rewards;
 
   const [rewards, setRewards] = useState(userRewards);
   // const [currUser, setCurrUser] = useState(user);
@@ -20,6 +20,7 @@ function Exchange() {
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
+    console.log("useEffect in exchange", currUser);
     getPageData();
   });
 
@@ -42,7 +43,7 @@ function Exchange() {
     const rewards = originalRewards.filter((r) => r.id !== selectedReward.id);
     setRewards(rewards);
     try {
-      await deleteReward(selectedReward.id);
+      await deleteReward(selectedReward);
     } catch (ex) {
       if (ex.response && ex.response.status === 404)
         toast.error("This reward has already been deleted.");
@@ -114,8 +115,9 @@ function Exchange() {
       />
 
       <RewardsTable
-        rewards={rewards}
-        onDelete={handleDelete}
+        // rewards={rewards}
+        // onDelete={handleDelete}
+        getPageData={getPageData}
         onToggleModal={handleToggleModal}
       />
     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { auth } from "../../firebase-config";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,8 +7,10 @@ import {
   signInWithGoogle,
 } from "../../firebase/logService";
 import "./registerForm.css";
+import { UserContext } from "./../../utils/userContext";
 
 const RegisterForm = (props) => {
+  const [currUser, setCurrUser] = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -17,13 +19,13 @@ const RegisterForm = (props) => {
 
   const register = () => {
     if (!name) alert("Please enter name");
-    registerWithEmailAndPassword(name, email, password, props.onUser);
+    registerWithEmailAndPassword(name, email, password, setCurrUser);
   };
 
   useEffect(() => {
     if (loading) return;
-    if (user) navigate("/tasks");
-  }, [user, loading]);
+    if (currUser) navigate("/tasks");
+  }, [currUser, loading]);
 
   return (
     <div className="register">

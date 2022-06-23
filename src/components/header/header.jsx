@@ -1,22 +1,40 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { NavLink, Link, generatePath } from "react-router-dom";
 import { logout } from "../../firebase/logService";
+import { auth, db } from "../../firebase-config";
+import { getCurrUser } from "../../firebase/userService";
+
 import Tasks from "../tasks/tasks";
 import Exchange from "../exchange/exchange";
 import logo from "../../pictures/logo.jpg";
+import { UserContext } from "./../../utils/userContext";
 
 import "./header.css";
 import { Navbar } from "react-bootstrap";
 
-const Header = ({ user }) => {
-  console.log(user);
+const Header = () => {
+  const [currUser, setCurrUser] = useContext(UserContext);
+
+  // useEffect(() => {
+  //   console.log("Header useEffect", currUser);
+
+  //   auth.onAuthStateChanged(async (user) => {
+  //     if (user) {
+  //       console.log("inside: ", user);
+  //       const userData = await getCurrUser(user.uid);
+  //       await setCurrUser(userData);
+  //       // setCurrUser(userData);
+  //     }
+  //   });
+  // }, [currUser]);
 
   return (
     <div className="header">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <Link className="navbar-brand" to={user ? "/tasks" : "/"}>
+        <Link className="navbar-brand" to={"/"}>
           <img src={logo} className="photo"></img>
         </Link>
+
         <button
           className="navbar-toggler"
           type="button"
@@ -30,7 +48,7 @@ const Header = ({ user }) => {
         </button>
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div className="navbar-nav">
-            {!user && (
+            {!currUser && (
               <React.Fragment>
                 <NavLink className="nav-item nav-link" to="/login">
                   Login
@@ -40,7 +58,7 @@ const Header = ({ user }) => {
                 </NavLink>
               </React.Fragment>
             )}
-            {user && (
+            {currUser && (
               <React.Fragment>
                 <NavLink className="nav-item nav-link" to="/tasks">
                   Tasks
@@ -49,16 +67,16 @@ const Header = ({ user }) => {
                   Exchange
                 </NavLink>
                 <Navbar.Collapse className="justify-content-end">
-                  <Navbar.Text> Logging in as {user.name}</Navbar.Text>
+                  <Navbar.Text> Logging in as {currUser.name}</Navbar.Text>
                 </Navbar.Collapse>
                 <NavLink
                   className="nav-item nav-link justify-content-end"
-                  to="/profile/${user.uid}"
+                  to="/profile/${currUser.uid}"
                 >
                   Profile
                 </NavLink>
                 <Navbar.Collapse className="justify-content-end">
-                  <Navbar.Text>{user.totalPoints} pt</Navbar.Text>
+                  <Navbar.Text>{currUser.totalPoints} pt</Navbar.Text>
                 </Navbar.Collapse>
                 <Navbar.Collapse
                   className="justify-content-end"

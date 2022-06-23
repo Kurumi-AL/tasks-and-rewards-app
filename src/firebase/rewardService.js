@@ -1,4 +1,5 @@
 import { db } from "../firebase-config";
+import { getCurrUser } from "./userService";
 import {
   collection,
   query,
@@ -16,11 +17,11 @@ export const addReward = async ({
   newPoint,
   newComment,
   currUser,
+  setCurrUser,
   onClose,
 }) => {
   console.log("addReward");
 
-  // TODO: Change the uid to documentId
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
@@ -34,10 +35,14 @@ export const addReward = async ({
     };
 
     rewards.push(newReward);
-    const newFields = { rewards: rewards };
 
-    await updateDoc(userDoc, newFields);
+    await updateDoc(userDoc, {
+      rewards: rewards,
+    });
 
+    // Get updated user
+    const updatedUser = await getCurrUser(currUser.uid);
+    setCurrUser(updatedUser);
     onClose();
   } catch (err) {
     console.error(err);
@@ -46,17 +51,19 @@ export const addReward = async ({
 };
 
 // Delete
-export const deleteReward = async ({ itemId, currUser }) => {
-  console.log("deleteReward: ", itemId);
-
-  // TODO: Change the uid to documentId
+export const deleteReward = async ({ reward, currUser }) => {
+  console.log("deleteReward: ", reward);
+  const itemId = reward.timestamp.seconds;
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
-    const rewards = currUser.rewards;
-    const newRewards = rewards.filter((reward) => reward.timestamp !== itemId);
-    const newFields = { rewards: newRewards };
-    await updateDoc(userDoc, newFields);
+    const rewards = [...currUser.rewards];
+    const newRewards = rewards.filter(
+      (reward) => reward.timestamp.seconds !== itemId
+    );
+    await updateDoc(userDoc, {
+      rewards: newRewards,
+    });
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -64,15 +71,20 @@ export const deleteReward = async ({ itemId, currUser }) => {
 };
 
 // Sub the points from the user's total points
-export const subPoints = async ({ itemId, currUser }) => {
-  console.log("subPoints: ", itemId);
+export const exchangeReward = async ({ reward, currUser }) => {
+  console.log("exchangeReward: ", reward);
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
-    const rewards = currUser.rewards;
-    const theItem = rewards.find((reward) => reward.timestamp === itemId);
-    const newFields = { points: currUser.points - theItem.points };
-    await updateDoc(userDoc, newFields);
+    const newTotalPoints = currUser.totalPoints - reward.points;
+
+    const exchangedRewards = [...currUser.exchangeRewards];
+    exchangedRewards.push(reward);
+
+    await updateDoc(userDoc, {
+      totalPoints: newTotalPoints,
+      exchangedRewards: exchangedRewards,
+    });
   } catch (err) {
     console.error(err);
     alert(err.message);

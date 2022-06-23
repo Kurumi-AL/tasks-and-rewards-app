@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../firebase-config";
 import {
@@ -6,21 +6,30 @@ import {
   signInWithGoogle,
 } from "../../firebase/logService";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { getCurrUser } from "./../../firebase/userService";
+import { UserContext } from "./../../utils/userContext";
 import "./loginForm.css";
 
 const LoginForm = (props) => {
+  const [currUser, setCurrUser] = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, loading, error] = useAuthState(auth);
-  console.log("loginform got user from auth state", user);
+
+  // const [user, loading, error] = useAuthState(auth);
+  // console.log("loginform got user from auth state", user);
+
   const navigate = useNavigate();
   useEffect(() => {
-    if (loading) {
-      // maybe trigger a loading screen
-      return;
-    }
-    if (user) navigate("/tasks");
-  }, [user, loading]);
+    console.log("useEffect in loginForm");
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const userData = await getCurrUser(user.uid);
+        setCurrUser(userData);
+        navigate("/tasks");
+      }
+    });
+  }, [currUser]);
+
   return (
     <div className="login">
       <div className="login__container">
@@ -41,7 +50,7 @@ const LoginForm = (props) => {
         <button
           className="login__btn"
           onClick={() =>
-            logInWithEmailAndPassword(email, password, props.onUser)
+            logInWithEmailAndPassword(email, password, setCurrUser)
           }
         >
           Login
@@ -49,7 +58,7 @@ const LoginForm = (props) => {
         <button
           className="login__btn login__google"
           onCanPlay={signInWithGoogle}
-          onClick={() => props.onUser(user)}
+          onClick={() => setCurrUser(currUser)}
         >
           Login with Google
         </button>

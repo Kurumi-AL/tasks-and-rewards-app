@@ -11,6 +11,9 @@ import {
   updateDoc,
   Timestamp,
 } from "firebase/firestore";
+import firebaseApp from "firebase-app";
+// import Tasks from "../components/tasks/tasks";
+import { getCurrUser } from "./userService";
 
 // Add a new task in collection "users/tasks"
 export const addTask = async ({
@@ -18,12 +21,11 @@ export const addTask = async ({
   newPoint,
   newComment,
   currUser,
+  setCurrUser,
   onClose,
 }) => {
   console.log("addTask: ", currUser);
 
-  // TODO: substitute `${currUser.uid}` with documentId
-  // TODO: How to get a documentId?????
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
@@ -40,13 +42,14 @@ export const addTask = async ({
 
     // Add the new task object to tasks[]
     tasks.push(newTask);
-    const newFields = { tasks: tasks };
 
-    console.log("userDoc: ", userDoc);
-    console.log("newFields: ", newFields);
+    await updateDoc(userDoc, {
+      tasks: tasks,
+    });
 
-    await updateDoc(userDoc, newFields);
-
+    // Get updated user
+    const updatedUser = await getCurrUser(currUser.uid);
+    setCurrUser(updatedUser);
     onClose();
   } catch (err) {
     console.error(err);
@@ -55,17 +58,18 @@ export const addTask = async ({
 };
 
 // Delete
-export const deleteTask = async ({ itemId, currUser }) => {
-  console.log("deleteTask: ", itemId);
+export const deleteTask = async ({ task, currUser }) => {
+  console.log("deleteTask: ", task);
+  const itemId = task.timestamp.seconds;
 
-  // TODO: Change the uid to documentId
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
-    const tasks = currUser.tasks;
-    const newTasks = tasks.filter((task) => task.timestamp !== itemId);
-    const newFields = { tasks: newTasks };
-    await updateDoc(userDoc, newFields);
+    const tasks = [...currUser.tasks];
+    const newTasks = tasks.filter((task) => task.timestamp.seconds !== itemId);
+    await updateDoc(userDoc, {
+      tasks: newTasks,
+    });
   } catch (err) {
     console.error(err);
     alert(err.message);
@@ -73,17 +77,15 @@ export const deleteTask = async ({ itemId, currUser }) => {
 };
 
 // Add point to the user account
-export const addPoints = async ({ itemId, currUser }) => {
-  console.log("addPoints: ", itemId);
-
-  // TODO: Change the uid to documentId
+export const addPoints = async ({ task, currUser }) => {
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
-    const tasks = currUser.tasks;
-    const theItem = tasks.find((task) => task.timestamp === itemId);
-    const newFields = { points: currUser.points + theItem.points };
-    await updateDoc(userDoc, newFields);
+    const newTotalPoints = currUser.totalPoints + task.points;
+
+    await updateDoc(userDoc, {
+      totalPoints: newTotalPoints,
+    });
   } catch (err) {
     console.error(err);
     alert(err.message);

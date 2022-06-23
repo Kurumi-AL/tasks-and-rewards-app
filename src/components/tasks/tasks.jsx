@@ -1,4 +1,5 @@
 import React, { Component, useEffect, useState, useContext } from "react";
+import { db } from "../../firebase-config";
 import SearchBox from "../../elements/searchBox";
 import TasksTable from "./tasksTable";
 import Pagination from "../../elements/pagination";
@@ -7,16 +8,18 @@ import { getTasks } from "../../services/fakeTasksData";
 import { paginate } from "./../../utils/paginate";
 import { getCurrUser } from "./../../firebase/userService";
 import { deleteTask, addPoints } from "../../firebase/taskService";
-import { userContext } from "../../utils/userContext";
+import { UserContext } from "../../utils/userContext";
+import { doc } from "firebase/firestore";
 
 import _ from "lodash";
+import { getDoc } from "firebase/firestore";
 
 function Tasks() {
-  const user = useContext(userContext);
-  const userTasks = user.tasks;
+  const [currUser, setCurrUser] = useContext(UserContext);
 
-  const [currUser, setCurrUser] = useState(user);
-  const [tasks, setTasks] = useState(userTasks);
+  // const userTasks = currUser ? currUser.tasks : [];
+
+  // const [tasks, setTasks] = useState(userTasks);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [sortColumn, setSortColumn] = useState({ path: "name", order: "asc" });
@@ -25,19 +28,36 @@ function Tasks() {
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    console.log("useEffect in tasks: ", user);
-    console.log("useEffect in tasks: ", tasks);
-
+    console.log("useEffect in tasks: ", currUser);
+    // setTasks(currUser.tasks);
     getPageData();
-  });
+  }, [currUser]);
 
-  const toggleModal = () => {
+  const toggleModal = async () => {
     setModalOpen(!modalOpen);
+
+    // const docRef = doc(db, "users", currUser.uid);
+    // const docSnap = await getDoc(docRef);
+    // getPageData();
+
+    // await updateTasks(docSnap.data().tasks);
+
+    // const docRef = doc(db, "users", currUser.uid);
+    // const docSnap = await getDoc(docRef);
+    // await updateTasks();
   };
 
-  const updateTasks = (tasks) => {
-    setTasks(tasks);
+  const updateTasks = async (tasks) => {
+    console.log("updateTasks");
+
+    // await setTasks(tasks);
   };
+  // const updateTasks = async () => {
+  //   const docRef = doc(db, "users", currUser.uid);
+  //   const docSnap = await getDoc(docRef);
+
+  //   await setTasks(docSnap.data().tasks);
+  // };
 
   const handleConfirm = () => {
     console.log("Added a new task");
@@ -58,10 +78,18 @@ function Tasks() {
   };
 
   const handleSort = (sortColumn) => {
+    console.log("handleSort");
     setSortColumn(sortColumn);
   };
 
+  const handleAddTask = async ({ task }) => {
+    console.log("handleAddTask");
+  };
+
   const getPageData = () => {
+    console.log("Tasks get page data", currUser);
+    const tasks = currUser.tasks;
+
     if (tasks.length === 0) return;
 
     const allTasks = [...tasks];
@@ -77,7 +105,6 @@ function Tasks() {
 
     const totalCount = filtered.length;
     setTotalCount(totalCount);
-    setTasks(newTasks);
     // return { totalCount: filtered.length, data: tasks };
   };
 
@@ -90,11 +117,12 @@ function Tasks() {
             <SearchBox value={searchQuery} onChange={handleSearch} />
 
             <TasksTable
-              tasks={tasks}
+              // tasks={tasks}
               sortColumn={sortColumn}
-              onAddPoints={addPoints}
-              onDelete={deleteTask}
+              // onAddPoints={addPoints}
+              // onDelete={() => deleteTask()}
               onSort={handleSort}
+              getPageData={getPageData}
             />
 
             <Pagination
