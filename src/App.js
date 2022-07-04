@@ -52,7 +52,8 @@ function App() {
       <ToastContainer />
 
       <Header />
-      <div className="content">
+
+      <div className="App">
         <Routes>
           <Route
             path="/login"
