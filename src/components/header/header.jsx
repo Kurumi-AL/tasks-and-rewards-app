@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, Container } from "react";
 import { NavLink, Link, generatePath } from "react-router-dom";
 import { logout } from "../../firebase/logService";
 import { auth, db } from "../../firebase-config";
@@ -8,9 +8,8 @@ import Tasks from "../tasks/tasks";
 import Exchange from "../exchange/exchange";
 import logo from "../../pictures/logo.jpg";
 import { UserContext } from "./../../utils/userContext";
-
+import { Navbar, Nav } from "react-bootstrap";
 import "./header.css";
-import { Navbar } from "react-bootstrap";
 
 const Header = () => {
   const [currUser, setCurrUser] = useContext(UserContext);
@@ -66,18 +65,21 @@ const Header = () => {
                 <NavLink className="nav-item nav-link" to="/exchange">
                   Exchange
                 </NavLink>
-                <Navbar.Collapse className="justify-content-end">
-                  <Navbar.Text> Logging in as {currUser.name}</Navbar.Text>
-                </Navbar.Collapse>
+
+                {/* <Navbar.Collapse className="justify-content-end">
+                  <Navbar.Text> Logged in as {currUser.name}</Navbar.Text>
+                </Navbar.Collapse> */}
                 <NavLink
                   className="nav-item nav-link justify-content-end"
                   to="/profile/${currUser.uid}"
                 >
                   Profile
                 </NavLink>
+
                 <Navbar.Collapse className="justify-content-end">
-                  <Navbar.Text>{currUser.totalPoints} pt</Navbar.Text>
+                  <Navbar.Text>{currUser.totalPoints} pt </Navbar.Text>
                 </Navbar.Collapse>
+
                 <Navbar.Collapse
                   className="justify-content-end"
                   onClick={logout}

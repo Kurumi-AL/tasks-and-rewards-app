@@ -11,7 +11,10 @@ import Home from "./components/home/home";
 import Reset from "./components/reset/reset";
 import { getCurrUser } from "./firebase/userService";
 import { UserContext } from "./utils/userContext";
+
 import "./App.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [currUser, setCurrUser] = useState(null);
@@ -46,6 +49,8 @@ function App() {
 
   return (
     <UserContext.Provider value={[currUser, setCurrUser]}>
+      <ToastContainer />
+
       <Header />
       <div className="content">
         <Routes>

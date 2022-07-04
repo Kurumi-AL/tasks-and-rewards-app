@@ -82,7 +82,15 @@ function Popup_Form(props) {
                     setCurrUser,
                     onClose,
                   })
-              : addReward
+              : () =>
+                  addReward({
+                    newTitle,
+                    newPoint,
+                    newComment,
+                    currUser,
+                    setCurrUser,
+                    onClose,
+                  })
           }
           // newName={newTitle}
           // newPoint={newPoint}

@@ -6,45 +6,34 @@ import { getCurrUser } from "../../firebase/userService";
 import { UserContext } from "../../utils/userContext";
 import { deleteTask, addPoints } from "../../firebase/taskService";
 
-function TasksTable({ sortColumn, onSort, getPageData }) {
+function TasksTable({
+  tasks,
+  sortColumn,
+  onDeleteTask,
+  onAddPoints,
+  onSort,
+  getPageData,
+}) {
   const [columns, setColumns] = useState([
     { path: "name", label: "Task name" },
     { path: "points", label: "Points" },
     { key: "add", label: "Add points" },
     { key: "delete", label: "Delete" },
   ]);
-  const [currUser, setCurrUser] = useContext(UserContext);
-  const [tasks, setTasks] = useState([]);
+
+  // const [currUser, setCurrUser] = useContext(UserContext);
+  // const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    console.log("useEffect in tasksTable: ", currUser);
-    setTasks(currUser.tasks);
-  }, [currUser]);
+    console.log("useEffect in tasksTable: ");
+    // setTasks(currUser.tasks);
+  });
 
   const renderSortIcon = (column) => {
     if (column.path !== sortColumn.path) return null;
     if (sortColumn.order === "asc") return <i className="fa fa-sort-asc"></i>;
 
     return <i className="fa fa-sort-desc"></i>;
-  };
-
-  const handleDeleteTask = async ({ task }) => {
-    console.log("handleDeleteTask");
-    await deleteTask({ task, currUser });
-
-    const updatedUser = await getCurrUser(currUser.uid);
-    setCurrUser(updatedUser);
-    getPageData();
-    // updateTasks(currUser.tasks);
-  };
-
-  const handleAddPoints = async ({ task }) => {
-    console.log("handleAddPoints");
-    await addPoints({ task, currUser });
-
-    const updatedUser = await getCurrUser(currUser.uid);
-    setCurrUser(updatedUser);
-    getPageData();
   };
 
   return (
@@ -61,7 +50,7 @@ function TasksTable({ sortColumn, onSort, getPageData }) {
             <td className="text-center" style={{ width: 15 + "%" }}>
               {" "}
               <button
-                onClick={() => handleAddPoints({ task })}
+                onClick={() => onAddPoints({ task })}
                 type="btn btn-sm"
                 className="btn btn-outline-dark"
               >
@@ -71,7 +60,7 @@ function TasksTable({ sortColumn, onSort, getPageData }) {
             <td style={{ width: 15 + "%" }}>
               {" "}
               <button
-                onClick={() => handleDeleteTask({ task })}
+                onClick={() => onDeleteTask({ task })}
                 type="btn btn-sm"
                 className="btn btn-outline-dark"
               >

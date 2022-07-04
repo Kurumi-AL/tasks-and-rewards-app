@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { deleteReward, getRewards } from "./../../services/fakeRewardsData";
 import { toast } from "react-toastify";
 import { UserContext } from "../../utils/userContext";
+import { getCurrUser } from "./../../firebase/userService";
+import { exchangeReward, deleteReward } from "./../../firebase/rewardService";
 import SearchBox from "../../elements/searchBox";
 import RewardsTable from "./rewardsTable";
 import Popup_Form from "../popup/popup_form";
@@ -10,32 +11,56 @@ import "./exchange.css";
 
 function Exchange() {
   const [currUser, setCurrUser] = useContext(UserContext);
-  const userRewards = currUser.rewards;
 
+  const userRewards = currUser ? currUser.rewards : [];
   const [rewards, setRewards] = useState(userRewards);
-  // const [currUser, setCurrUser] = useState(user);
+
   const [sortColumn, setSortColumn] = useState({ order: "asc" });
   const [searchQuery, setSearchQuery] = useState("");
-  const [isAddFormModalOpen, setIsAddFormModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     console.log("useEffect in exchange", currUser);
     getPageData();
-  });
+  }, [currUser, sortColumn, searchQuery]);
 
-  const handleSort = (sortColumn) => {
-    setSortColumn(sortColumn);
+  const toggleModal = async () => {
+    setModalOpen(!modalOpen);
   };
+
+  const handleDeleteReward = async ({ selectedItem: reward, onClose }) => {
+    console.log("handleDeleteReward", reward);
+    await deleteReward({ reward, currUser });
+    onClose();
+
+    const updatedUser = await getCurrUser(currUser.uid);
+    setCurrUser(updatedUser);
+    getPageData();
+  };
+
+  const handleExchange = async ({ selectedItem: reward, onClose }) => {
+    console.log("handleExchange", reward);
+    await exchangeReward({ reward, currUser });
+    onClose();
+
+    const updatedUser = await getCurrUser(currUser.uid);
+    setCurrUser(updatedUser);
+    getPageData();
+  };
+
+  // const handleSort = (sortColumn) => {
+  //   setSortColumn(sortColumn);
+  // };
 
   const handleSearch = (query) => {
     setSearchQuery(query);
   };
 
-  const handleAddNewReward = () => {
-    const isAddFormModalOpen = !isAddFormModalOpen;
-    setIsAddFormModalOpen(isAddFormModalOpen);
-  };
+  // const handleAddNewReward = () => {
+  //   const isAddFormModalOpen = !isAddFormModalOpen;
+  //   setIsAddFormModalOpen(isAddFormModalOpen);
+  // };
 
   const handleDelete = async (selectedReward) => {
     console.log("Handle delete");
@@ -57,6 +82,9 @@ function Exchange() {
   };
 
   const getPageData = () => {
+    console.log("getPageData in exchange");
+    const rewards = currUser.rewards;
+
     if (rewards.length === 0) return;
 
     const allRewards = [...rewards];
@@ -65,20 +93,22 @@ function Exchange() {
       filtered = allRewards.filter((r) =>
         r.name.toLowerCase().startsWith(searchQuery.toLowerCase())
       );
-    const sorted = _.orderBy(filtered, ["point"], [sortColumn.order]);
+    const sorted = _.orderBy(filtered, ["points"], [sortColumn.order]);
+    setRewards(sorted);
 
     const length = sorted.length;
     setTotalCount(length);
-    setRewards(sorted);
 
     // return { totalCount: sorted.length, data: sorted };
   };
 
   const raiseSort = () => {
-    const sortColumn = { ...sortColumn };
+    console.log("raiseSort", sortColumn);
     sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
-
-    handleSort(sortColumn);
+    setSortColumn(sortColumn);
+    console.log(sortColumn);
+    getPageData();
+    // handleSort(sortColumn);
   };
 
   return (
@@ -94,31 +124,38 @@ function Exchange() {
         onChange={handleSearch}
       />
 
-      <button type="button" className="btn btn-secondary" onClick={raiseSort}>
+      <button
+        type="button"
+        className="btn btn-secondary"
+        onClick={() => raiseSort()}
+      >
         Sort by point
       </button>
 
       <button
         type="button"
         className="btn btn-success btn-add"
-        onClick={handleAddNewReward}
+        onClick={toggleModal}
       >
         Add a new reward
       </button>
 
-      <Popup_Form
-        show={isAddFormModalOpen}
-        onClose={handleAddNewReward}
-        path="rewards"
-        // currUser={currUser}
-        // genres={genres}
-      />
-
       <RewardsTable
-        // rewards={rewards}
+        rewards={rewards}
+        onDeleteReward={handleDeleteReward}
+        onExchange={handleExchange}
+        availablePoints={currUser.totalPoints}
         // onDelete={handleDelete}
         getPageData={getPageData}
         onToggleModal={handleToggleModal}
+      />
+
+      <Popup_Form
+        show={modalOpen}
+        onClose={() => toggleModal()}
+        path="rewards"
+        // currUser={currUser}
+        // genres={genres}
       />
     </div>
   );

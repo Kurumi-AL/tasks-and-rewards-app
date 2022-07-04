@@ -5,67 +5,90 @@ import { deleteReward, exchangeReward } from "../../firebase/rewardService";
 import { getCurrUser } from "./../../firebase/userService";
 import "./exchangeCard.css";
 
-function RewardsTable({ getPageData }) {
-  const [currUser, setCurrUser] = useContext(UserContext);
-  const [rewards, setRewards] = useState([]);
+function RewardsTable({
+  rewards,
+  onDeleteReward,
+  onExchange,
+  availablePoints,
+  getPageData,
+  // onToggleModal
+}) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedReward, setSelectedReward] = useState(null);
+
+  // const [currUser, setCurrUser] = useContext(UserContext);
+  // const [rewards, setRewards] = useState([]);
 
   useEffect(() => {
-    console.log("useEffect in rewardsTable: ", currUser);
-    setRewards(currUser.rewards);
-  }, [currUser]);
+    console.log("useEffect in rewardsTable: ", rewards);
+    // setRewards(currUser.rewards);
+  });
 
-  const raiseToggleModal = (reward) => {
-    const rewards = [...this.props.rewards];
+  const raiseToggleModal = ({ reward }) => {
+    console.log("raiseToggleModal", reward);
     const index = rewards.indexOf(reward);
     rewards[index] = { ...rewards[index] };
     rewards[index].isModalOpen = !rewards[index].isModalOpen;
-    this.props.onToggleModal(rewards);
+    // this.props.onToggleModal(rewards);
   };
 
-  const handleDeleteReward = async ({ reward }) => {
-    console.log("handleDeleteReward");
-    await deleteReward({ reward, currUser });
-
-    const updatedUser = await getCurrUser(currUser.uid);
-    setCurrUser(updatedUser);
-    getPageData();
+  const toggleModal = (reward) => {
+    console.log("toggleModal", reward);
+    setModalOpen(!modalOpen);
+    setSelectedReward(reward);
+    console.log(selectedReward);
   };
 
-  const handleExchange = async ({ reward }) => {
-    console.log("handleExchange");
-    await exchangeReward({ reward, currUser });
-
-    const updatedUser = await getCurrUser(currUser.uid);
-    setCurrUser(updatedUser);
-    getPageData();
+  const isDisabled = (r) => {
+    if (availablePoints >= r.points) return "card";
+    return "card-disabled";
   };
 
+  console.log("availablePoints: ", availablePoints);
   return (
-    <div className="row">
-      {rewards.map((r) => (
-        <div
-          key={r.id}
-          className="col-sm-3 py-2"
-          onClick={() => this.raiseToggleModal(r)}
-        >
-          <div className="card bg-light">
-            <div className="card-header">{r.points} pt</div>
-            <div className="card-body">
-              <h5 className="card-title">{r.name}</h5>
-              <p className="card-text">{r.comment}</p>
-              {/* <p className="card-text">{r.genre.name}</p> */}
+    <React.Fragment>
+      <div className="row">
+        {rewards.map((r) => (
+          <div
+            key={r.timestamp}
+            className="col-sm-3 py-2"
+            onClick={() => availablePoints >= r.points && toggleModal(r)}
+            // disabled={availablePoints >= r.points ? false : true}
+          >
+            {/* <div className=${`availablePoints>=r.points ? "card bg-light" : "card-disabled bg-light"`}> */}
+            <div
+              className={
+                availablePoints >= r.points ? "card bg-light" : "card-disabled"
+              }
+            >
+              <div className="card-header">{r.points} pt</div>
+              <div className="card-body">
+                <h5 className="card-title">{r.name}</h5>
+                <p className="card-text">{r.comment}</p>
+                {/* <p className="card-text">{r.genre.name}</p> */}
+              </div>
+
+              {/* {availablePoints < r.points && <div className="overlay"></div>} */}
             </div>
-          </div>
-          <Popup_Rewards
-            show={r.isModalOpen}
-            onClose={() => this.raiseToggleModal(r)}
-            onConfirm={() => handleExchange({ r })}
-            onDelete={() => handleDeleteReward({ r })}
+
+            {/* <Popup_Rewards
+            show={modalOpen}
+            onClose={toggleModal({ r })}
+            onConfirm={() => onExchange({ r })}
+            onDelete={() => onDeleteReward({ r })}
             selectedItem={r}
-          />
-        </div>
-      ))}
-    </div>
+          /> */}
+          </div>
+        ))}
+        <Popup_Rewards
+          show={modalOpen}
+          onClose={toggleModal}
+          onConfirm={onExchange}
+          onDelete={onDeleteReward}
+          selectedItem={selectedReward}
+        />
+      </div>
+    </React.Fragment>
   );
 }
 

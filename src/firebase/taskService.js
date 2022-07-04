@@ -14,6 +14,7 @@ import {
 import firebaseApp from "firebase-app";
 // import Tasks from "../components/tasks/tasks";
 import { getCurrUser } from "./userService";
+import { toast } from "react-toastify";
 
 // Add a new task in collection "users/tasks"
 export const addTask = async ({
@@ -51,9 +52,11 @@ export const addTask = async ({
     const updatedUser = await getCurrUser(currUser.uid);
     setCurrUser(updatedUser);
     onClose();
+
+    toast.success("Added a task successfully!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
@@ -70,9 +73,10 @@ export const deleteTask = async ({ task, currUser }) => {
     await updateDoc(userDoc, {
       tasks: newTasks,
     });
+    toast.success("Deleted a task successfully!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
@@ -86,8 +90,23 @@ export const addPoints = async ({ task, currUser }) => {
     await updateDoc(userDoc, {
       totalPoints: newTotalPoints,
     });
+    toast.success("Added points successfully!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
+  }
+};
+
+// Update tasks
+export const updateTasks = async ({ tasks, currUser }) => {
+  const userDoc = doc(db, "users", `${currUser.uid}`);
+
+  try {
+    await updateDoc(userDoc, {
+      tasks: tasks,
+    });
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message);
   }
 };

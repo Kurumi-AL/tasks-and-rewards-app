@@ -7,7 +7,7 @@ import Popup_Form from "../popup/popup_form";
 import { getTasks } from "../../services/fakeTasksData";
 import { paginate } from "./../../utils/paginate";
 import { getCurrUser } from "./../../firebase/userService";
-import { deleteTask, addPoints } from "../../firebase/taskService";
+import { deleteTask, addPoints, updateTasks } from "../../firebase/taskService";
 import { UserContext } from "../../utils/userContext";
 import { doc } from "firebase/firestore";
 
@@ -17,9 +17,9 @@ import { getDoc } from "firebase/firestore";
 function Tasks() {
   const [currUser, setCurrUser] = useContext(UserContext);
 
-  // const userTasks = currUser ? currUser.tasks : [];
+  const userTasks = currUser ? currUser.tasks : [];
+  const [tasks, setTasks] = useState(userTasks);
 
-  // const [tasks, setTasks] = useState(userTasks);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [sortColumn, setSortColumn] = useState({ path: "name", order: "asc" });
@@ -31,37 +31,43 @@ function Tasks() {
     console.log("useEffect in tasks: ", currUser);
     // setTasks(currUser.tasks);
     getPageData();
-  }, [currUser]);
+  }, [currUser, sortColumn, searchQuery]);
 
   const toggleModal = async () => {
     setModalOpen(!modalOpen);
-
-    // const docRef = doc(db, "users", currUser.uid);
-    // const docSnap = await getDoc(docRef);
-    // getPageData();
-
-    // await updateTasks(docSnap.data().tasks);
-
-    // const docRef = doc(db, "users", currUser.uid);
-    // const docSnap = await getDoc(docRef);
-    // await updateTasks();
   };
 
-  const updateTasks = async (tasks) => {
+  const handleUpdateTasks = async ({ newTasks }) => {
     console.log("updateTasks");
+    await updateTasks({ newTasks, currUser });
 
+    const updatedUser = await getCurrUser(currUser);
     // await setTasks(tasks);
   };
-  // const updateTasks = async () => {
-  //   const docRef = doc(db, "users", currUser.uid);
-  //   const docSnap = await getDoc(docRef);
 
-  //   await setTasks(docSnap.data().tasks);
-  // };
+  const updateUser = async () => {};
 
   const handleConfirm = () => {
     console.log("Added a new task");
     this.toggleModal();
+  };
+
+  const handleDeleteTask = async ({ task }) => {
+    console.log("handleDeleteTask", task);
+    await deleteTask({ task, currUser });
+
+    const updatedUser = await getCurrUser(currUser.uid);
+    setCurrUser(updatedUser);
+    getPageData();
+  };
+
+  const handleAddPoints = async ({ task }) => {
+    console.log("handleAddPoints");
+    await addPoints({ task, currUser });
+
+    const updatedUser = await getCurrUser(currUser.uid);
+    setCurrUser(updatedUser);
+    getPageData();
   };
 
   const handleSearch = (query) => {
@@ -80,6 +86,7 @@ function Tasks() {
   const handleSort = (sortColumn) => {
     console.log("handleSort");
     setSortColumn(sortColumn);
+    getPageData();
   };
 
   const handleAddTask = async ({ task }) => {
@@ -102,6 +109,7 @@ function Tasks() {
 
     const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
     const newTasks = paginate(sorted, currentPage, pageSize);
+    setTasks(newTasks);
 
     const totalCount = filtered.length;
     setTotalCount(totalCount);
@@ -117,8 +125,10 @@ function Tasks() {
             <SearchBox value={searchQuery} onChange={handleSearch} />
 
             <TasksTable
-              // tasks={tasks}
+              tasks={tasks}
               sortColumn={sortColumn}
+              onDeleteTask={handleDeleteTask}
+              onAddPoints={handleAddPoints}
               // onAddPoints={addPoints}
               // onDelete={() => deleteTask()}
               onSort={handleSort}

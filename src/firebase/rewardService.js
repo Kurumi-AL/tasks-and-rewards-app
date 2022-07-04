@@ -10,6 +10,7 @@ import {
   updateDoc,
   Timestamp,
 } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 // Add a new reward
 export const addReward = async ({
@@ -40,13 +41,15 @@ export const addReward = async ({
       rewards: rewards,
     });
 
+    toast.success("Added reward successfully!");
+
     // Get updated user
     const updatedUser = await getCurrUser(currUser.uid);
     setCurrUser(updatedUser);
     onClose();
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
@@ -64,9 +67,11 @@ export const deleteReward = async ({ reward, currUser }) => {
     await updateDoc(userDoc, {
       rewards: newRewards,
     });
+
+    toast.success("Deleted reward successfully!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
@@ -78,15 +83,17 @@ export const exchangeReward = async ({ reward, currUser }) => {
   try {
     const newTotalPoints = currUser.totalPoints - reward.points;
 
-    const exchangedRewards = [...currUser.exchangeRewards];
+    const exchangedRewards = [...currUser.exchangedRewards];
     exchangedRewards.push(reward);
 
     await updateDoc(userDoc, {
       totalPoints: newTotalPoints,
       exchangedRewards: exchangedRewards,
     });
+
+    toast.success("Exchanged reward successfully!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };

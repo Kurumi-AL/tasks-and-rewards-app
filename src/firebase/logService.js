@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { element } from "prop-types";
 import { getCurrUser } from "./userService";
+import { toast } from "react-toastify";
 
 // Login with google account
 const signInWithGoogle = async (onUser) => {
@@ -39,9 +40,10 @@ const signInWithGoogle = async (onUser) => {
         rewards: user.rewards,
       });
     }
+    toast.success("Welcome back, " + user.displayName + "!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
@@ -53,10 +55,11 @@ const logInWithEmailAndPassword = async (email, password, setCurrUser) => {
 
     const theUser = await getCurrUser(user.uid);
     await setCurrUser(theUser);
-    // onUser(user);
+
+    toast.success("Welcome back, " + theUser.name + "!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
@@ -85,9 +88,10 @@ const registerWithEmailAndPassword = async (
 
     const theUser = await getCurrUser(user.uid);
     await setCurrUser(theUser);
+    toast.success("Hello " + theUser.name + "!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
@@ -95,10 +99,10 @@ const registerWithEmailAndPassword = async (
 const sendPasswordReset = async (email) => {
   try {
     await sendPasswordResetEmail(auth, email);
-    alert("Password reset link sent!");
+    toast.success("Just sent you an email!");
   } catch (err) {
     console.error(err);
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
@@ -106,11 +110,11 @@ const sendPasswordReset = async (email) => {
 const logout = async () => {
   try {
     await signOut(auth);
+    toast.success("Logged out successfully!");
     window.location = "/";
-    alert("Logged out successfully!");
     console.log("logged out");
   } catch (err) {
-    alert(err.message);
+    toast.error(err.message);
   }
 };
 
