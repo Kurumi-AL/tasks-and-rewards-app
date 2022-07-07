@@ -1,67 +1,77 @@
-import React, { Component } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import TableHeader from "../../elements/tableHeader";
+import { db } from "../../firebase-config";
+import { doc, getDoc } from "firebase/firestore";
+import { getCurrUser } from "../../firebase/userService";
+import { UserContext } from "../../utils/userContext";
+import { deleteTask, addPoints } from "../../firebase/taskService";
 
-class TasksTable extends Component {
-  columns = [
+function TasksTable({
+  tasks,
+  sortColumn,
+  onDeleteTask,
+  onAddPoints,
+  onSort,
+  getPageData,
+}) {
+  const [columns, setColumns] = useState([
     { path: "name", label: "Task name" },
-    { path: "point", label: "Point" },
-    { key: "add", label: "Add point" },
+    { path: "points", label: "Points" },
+    { key: "add", label: "Add points" },
     { key: "delete", label: "Delete" },
-  ];
+  ]);
 
-  renderSortIcon = (column) => {
-    const { sortColumn } = this.props;
+  // const [currUser, setCurrUser] = useContext(UserContext);
+  // const [tasks, setTasks] = useState([]);
 
+  useEffect(() => {
+    console.log("useEffect in tasksTable: ");
+    // setTasks(currUser.tasks);
+  });
+
+  const renderSortIcon = (column) => {
     if (column.path !== sortColumn.path) return null;
     if (sortColumn.order === "asc") return <i className="fa fa-sort-asc"></i>;
 
     return <i className="fa fa-sort-desc"></i>;
   };
 
-  render() {
-    const { tasks, onAddPoint, onDelete, onSort } = this.props;
+  return (
+    <table className="table">
+      <TableHeader columns={columns} sortColumn={sortColumn} onSort={onSort} />
 
-    return (
-      <table className="table">
-        <TableHeader
-          columns={this.columns}
-          sortColumn={this.props.sortColumn}
-          onSort={onSort}
-        />
-
-        <tbody>
-          {tasks.map((task) => (
-            <tr key={task.id}>
-              <td style={{ width: 55 + "%" }}>{task.name}</td>
-              <td className="text-end" style={{ width: 15 + "%" }}>
-                {task.point} pt
-              </td>
-              <td className="text-center" style={{ width: 15 + "%" }}>
-                {" "}
-                <button
-                  onClick={() => onAddPoint(task)}
-                  type="btn btn-sm"
-                  className="btn btn-outline-dark"
-                >
-                  +
-                </button>
-              </td>
-              <td style={{ width: 15 + "%" }}>
-                {" "}
-                <button
-                  onClick={() => onDelete(task)}
-                  type="btn btn-sm"
-                  className="btn btn-outline-dark"
-                >
-                  -
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  }
+      <tbody>
+        {tasks.map((task) => (
+          <tr key={task.timestamp}>
+            <td style={{ width: 55 + "%" }}>{task.name}</td>
+            <td className="text-end" style={{ width: 15 + "%" }}>
+              {task.points} pt
+            </td>
+            <td className="text-center" style={{ width: 15 + "%" }}>
+              {" "}
+              <button
+                onClick={() => onAddPoints({ task })}
+                type="btn btn-sm"
+                className="btn btn-outline-dark"
+              >
+                +
+              </button>
+            </td>
+            <td style={{ width: 15 + "%" }}>
+              {" "}
+              <button
+                onClick={() => onDeleteTask({ task })}
+                type="btn btn-sm"
+                className="btn btn-outline-dark"
+              >
+                -
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 }
 
 export default TasksTable;

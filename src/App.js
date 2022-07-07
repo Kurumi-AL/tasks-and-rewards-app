@@ -1,48 +1,167 @@
-import React, { Component } from "react";
-import { Route, Navigate, Routes } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import React, { useState, useEffect } from "react";
+import { Route, Navigate, Routes, useNavigate } from "react-router-dom";
+import { auth, db } from "./firebase-config";
 import Header from "./components/header/header";
 import Tasks from "./components/tasks/tasks";
-import RegisterForm from "./components/registerForm/registerForm";
-import auth from "./services/authService";
-import "./App.css";
-import LoginForm from "./components/loginForm/loginForm";
-import Logout from "./components/logout/logout";
 import Exchange from "./components/exchange/exchange";
+import RegisterForm from "./components/registerForm/registerForm";
+import LoginForm from "./components/loginForm/loginForm";
+import Profile from "./components/profile/profile";
+import Home from "./components/home/home";
+import Reset from "./components/reset/reset";
+import { getCurrUser } from "./firebase/userService";
+import { UserContext } from "./utils/userContext";
 
-class App extends Component {
-  state = {};
+import "./App.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-  componentDidMount() {
-    const user = auth.getCurrentUser();
-    this.setState({ user });
-  }
+function App() {
+  const [currUser, setCurrUser] = useState(null);
 
-  render() {
-    const { user } = this.state;
+  const navigate = useNavigate();
 
-    return (
-      <React.Fragment>
-        <Exchange />
+  useEffect(() => {
+    console.log("useEffect in App");
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        console.log("inside: ", user);
+        const userData = await getCurrUser(user.uid);
+        console.log("Got userData from userService", userData);
+        await setCurrUser(userData);
+        // setCurrUser(userData);
+      }
+    });
+  }, []);
 
-        {/* <ToastContainer />
-        <Header user={user} />
-        <main className="container">
-          <Routes>
-            <Route path="/register" component={RegisterForm}></Route>
-            <Route path="/login" component={LoginForm}></Route>
-            <Route path="/logout" component={Logout}></Route>
-            <Route
-              path="/"
-              element={<Navigate replace to="/tasks" component={Tasks} />}
-            ></Route>
+  const updateCurrUser = async (user) => {
+    console.log("updateCurrUser: ", user);
+    if (user) {
+      const uid = user.uid;
+      const theUser = await getCurrUser(uid);
+      console.log("theUser", theUser);
+      await setCurrUser(theUser);
+      console.log("After toggleUser - currUser: ", currUser);
 
-            <Navigate to="/not-found" />
-          </Routes>
-        </main> */}
-      </React.Fragment>
-    );
-  }
+      // setCurrUser(theUser);
+    }
+  };
+
+  return (
+    <UserContext.Provider value={[currUser, setCurrUser]}>
+      <ToastContainer />
+
+      <Header />
+
+      <div className="App">
+        <Routes>
+          <Route
+            path="/login"
+            element={<LoginForm updateCurrUser={updateCurrUser} />}
+          />
+          <Route
+            path="/register"
+            element={<RegisterForm updateCurrUser={updateCurrUser} />}
+          />
+          <Route path="/reset" element={<Reset />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/exchange" element={<Exchange />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={currUser ? navigate("/tasks") : <Home />} /> */}
+          <Route
+            path="*"
+            element={
+              <main>
+                <p>Error: 404</p>
+              </main>
+            }
+          />
+        </Routes>
+      </div>
+    </UserContext.Provider>
+  );
 }
 
 export default App;
+
+// import React, { useState, useEffect } from "react";
+// import { Route, Navigate, Routes } from "react-router-dom";
+// import { auth, db } from "./firebase-config";
+// import Header from "./components/header/header";
+// import Tasks from "./components/tasks/tasks";
+// import Exchange from "./components/exchange/exchange";
+// import RegisterForm from "./components/registerForm/registerForm";
+// import LoginForm from "./components/loginForm/loginForm";
+// import Profile from "./components/profile/profile";
+// import Home from "./components/home/home";
+// import Reset from "./components/reset/reset";
+// import { getCurrUser } from "./firebase/userService";
+// import {
+//   UserProvider,
+//   useCurrUser,
+//   useCurrUserUpdate,
+// } from "./utils/userContext";
+// import "./App.css";
+
+// function App() {
+//   const currUser = useCurrUser();
+//   const toggleUser = useCurrUserUpdate();
+
+//   useEffect(() => {
+//     console.log("useEffect in App");
+//     auth.onAuthStateChanged(async (user) => {
+//       if (user) {
+//         console.log("inside: ", user);
+//         const userData = await getCurrUser(user.uid);
+//         console.log("Got userData from userService", userData);
+//         toggleUser(userData);
+//         // setCurrUser(userData);
+//       }
+//     });
+//   }, []);
+
+//   const handleUser = async (user) => {
+//     console.log("handleUser: ", user);
+//     if (user) {
+//       const uid = user.uid;
+//       const theUser = await getCurrUser(uid);
+//       toggleUser(theUser);
+//       console.log("After toggleUser - currUser: ", currUser);
+
+//       // setCurrUser(theUser);
+//     }
+//   };
+
+//   return (
+//     <UserProvider>
+//       <React.Fragment>
+//         <Header user={currUser} />
+//         <div className="content">
+//           <Routes>
+//             <Route path="/login" element={<LoginForm onUser={handleUser} />} />
+//             <Route
+//               path="/register"
+//               element={<RegisterForm onUser={handleUser} />}
+//             />
+//             <Route path="/reset" element={<Reset />} />
+//             <Route path="/tasks" element={<Tasks />} />
+//             <Route path="/exchange" element={<Exchange user={currUser} />} />
+//             <Route path="/profile/:id" element={<Profile user={currUser} />} />
+//             <Route path="/" element={currUser ? <Tasks /> : <Home />} />
+//             <Route
+//               path="*"
+//               element={
+//                 <main>
+//                   <p>Error: 404</p>
+//                 </main>
+//               }
+//             />
+//           </Routes>
+//         </div>
+//       </React.Fragment>
+//     </UserProvider>
+//   );
+// }
+
+// export default App;

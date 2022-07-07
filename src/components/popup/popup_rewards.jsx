@@ -2,37 +2,42 @@ import { Modal } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import "./popup.css";
 
-function MyVerticallyCenteredModal(props) {
+function Popup_Rewards({ show, selectedItem, onClose, onConfirm, onDelete }) {
+  console.log("Popup_Rewards: ", selectedItem);
+  if (!selectedItem) return;
+
   return (
     <Modal
-      {...props}
+      // {...props}
+      show={show}
+      onHide={onClose}
       size="md"
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
-          {props.selectedReward.point} pt
+          {selectedItem.points} pt
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h4>Centered Modal</h4>
-        <p>
-          Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-          dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-          consectetur ac, vestibulum at eros.
-        </p>
+        <h4>{selectedItem.name}</h4>
+        <p>{selectedItem.comment}</p>
+        {/* <p>{selectedItem.genre.name}</p> */}
         <div className="row">
           <div className="col-sm-12 text-center">
-            <Button className="btn-popup" onClick={props.onClose}>
+            <Button className="btn-popup" onClick={onClose}>
               Close
-            </Button>
-            <Button className="btn-popup" onClick={props.onConfirm}>
-              Confirm
             </Button>
             <Button
               className="btn-popup"
-              onClick={() => props.onDelete(props.selectedReward)}
+              onClick={() => onConfirm({ selectedItem, onClose })}
+            >
+              Exchange
+            </Button>
+            <Button
+              className="btn-popup"
+              onClick={() => onDelete({ selectedItem, onClose })}
             >
               Delete
             </Button>
@@ -46,4 +51,4 @@ function MyVerticallyCenteredModal(props) {
   );
 }
 
-export default MyVerticallyCenteredModal;
+export default Popup_Rewards;

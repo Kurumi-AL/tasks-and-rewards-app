@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import { faSortUp, faSortDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-class TableHeader extends Component {
-  raiseSort = (path) => {
-    const sortColumn = { ...this.props.sortColumn };
+function TableHeader({ columns, sortColumn, onSort }) {
+  const raiseSort = (path) => {
+    console.log("raiseSort", path);
+    console.log("sortColumn: ", sortColumn);
+
+    // const sortColumn = [...sortColumn];
     if (sortColumn.path === path)
       sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
     else {
@@ -12,35 +15,33 @@ class TableHeader extends Component {
       sortColumn.order = "asc";
     }
 
-    this.props.onSort(sortColumn);
+    onSort(sortColumn);
   };
 
-  renderSortIcon = (column) => {
-    const { sortColumn } = this.props;
-    console.log(sortColumn);
+  const renderSortIcon = (column) => {
+    // const sortColumn = [...sortColumn];
     if (sortColumn.path === undefined) return null;
     if (column.path !== sortColumn.path) return null;
     if (sortColumn.order === "asc") return <FontAwesomeIcon icon={faSortUp} />;
     return <FontAwesomeIcon icon={faSortDown} />;
   };
 
-  render() {
-    return (
-      <thead>
-        <tr>
-          {this.props.columns.map((column) => (
-            <th
-              className="clickable"
-              key={column.path || column.key}
-              onClick={() => this.raiseSort(column.path)}
-            >
-              {column.label} {this.renderSortIcon(column)}
-            </th>
-          ))}
-        </tr>
-      </thead>
-    );
-  }
+  return (
+    <thead>
+      <tr>
+        {columns.map((column) => (
+          <th
+            className="clickable"
+            key={column.path || column.key}
+            onClick={() => raiseSort(column.path)}
+            style={{ cursor: column.path ? "pointer" : "" }}
+          >
+            {column.label} {renderSortIcon(column)}
+          </th>
+        ))}
+      </tr>
+    </thead>
+  );
 }
 
 export default TableHeader;

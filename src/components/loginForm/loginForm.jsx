@@ -1,50 +1,76 @@
-import React, { Component } from "react";
-import { Navigate } from "react-router-dom";
-import Joi from "joi-browser";
-import Form from "../../elements/form";
-import auth from "../../services/authService";
+import React, { useEffect, useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../../firebase-config";
+import {
+  logInWithEmailAndPassword,
+  signInWithGoogle,
+} from "../../firebase/logService";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { getCurrUser } from "./../../firebase/userService";
+import { UserContext } from "./../../utils/userContext";
+import "./loginForm.css";
 
-class LoginForm extends Form {
-  state = {
-    data: { username: "", password: "" },
-    errors: {},
-  };
+const LoginForm = (props) => {
+  const [currUser, setCurrUser] = useContext(UserContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  schema = {
-    username: Joi.string().required().label("Username"),
-    password: Joi.string().required().label("Password"),
-  };
+  // const [user, loading, error] = useAuthState(auth);
+  // console.log("loginform got user from auth state", user);
 
-  doSubmit = async () => {
-    try {
-      const { data } = this.state;
-      await auth.login(data.username, data.password);
-
-      const { state } = this.props.location;
-      window.location = state ? state.from.pathname : "/";
-    } catch (ex) {
-      if (ex.response && ex.response.status === 400) {
-        const errors = { ...this.state.errors };
-        errors.username = ex.response.data;
-        this.setState({ errors });
+  const navigate = useNavigate();
+  useEffect(() => {
+    console.log("useEffect in loginForm");
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const userData = await getCurrUser(user.uid);
+        setCurrUser(userData);
+        navigate("/tasks");
       }
-    }
-  };
+    });
+  }, [currUser]);
 
-  render() {
-    if (auth.getCurrentUser()) return <Navigate to="/" />;
-    return (
-      <div>
-        <h1>Login</h1>
-        <form onSubmit={this.handleSubmit}>
-          {this.renderInput("username", "Username")}
-          {this.renderInput("password", "Password", "password")}
-
-          {this.renderButton("Login")}
-        </form>
+  return (
+    <div className="login">
+      <div className="login__container">
+        <input
+          type="text"
+          className="login__textBox"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email Address"
+        />
+        <input
+          type="password"
+          className="login__textBox"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+        />
+        <button
+          className="login__btn"
+          onClick={() =>
+            logInWithEmailAndPassword(email, password, setCurrUser)
+          }
+        >
+          Login
+        </button>
+        <button
+          className="login__btn login__google"
+          onCanPlay={signInWithGoogle}
+          onClick={() => setCurrUser(currUser)}
+        >
+          Login with Google
+        </button>
+        <div>
+          <Link to="/reset">Forgot Password</Link>
+        </div>
+        <div>
+          Don't have an account? <Link to="/register">Register</Link> now.
+        </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default LoginForm;
