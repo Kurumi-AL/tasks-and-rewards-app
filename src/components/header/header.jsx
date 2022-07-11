@@ -1,39 +1,15 @@
-import React, { useEffect, useState, useContext } from "react";
-import { NavLink, Link, generatePath } from "react-router-dom";
+import React, { useContext } from "react";
+import { NavLink, Link } from "react-router-dom";
 import { logout } from "../../firebase/logService";
-import { auth, db } from "../../firebase-config";
-import { getCurrUser } from "../../firebase/userService";
-
-import Tasks from "../tasks/tasks";
-import Exchange from "../exchange/exchange";
 import logo from "../../pictures/logo.jpg";
 import { UserContext } from "./../../utils/userContext";
-import { Navbar, Nav, Container } from "react-bootstrap";
+import { Navbar } from "react-bootstrap";
 import "./header.css";
 
 const Header = () => {
   const [currUser, setCurrUser] = useContext(UserContext);
 
   return (
-    // <Navbar collapseOnSelect fixed="top" expand="sm" bg="dark" variant="dark">
-    //   <Container>
-    //     <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
-    //     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-    //     <Navbar.Collapse id="responsive-navbar-nav">
-    //       <Nav className="me-auto">
-    //         <Nav.Link href="#features">Features</Nav.Link>
-    //         <Nav.Link href="#pricing">Pricing</Nav.Link>
-    //       </Nav>
-    //       <Nav>
-    //         <Nav.Link href="#deets">More deets</Nav.Link>
-    //         <Nav.Link eventKey={2} href="#memes">
-    //           Dank memes
-    //         </Nav.Link>
-    //       </Nav>
-    //     </Navbar.Collapse>
-    //   </Container>
-    // </Navbar>
-
     <div className="header">
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <Link className="navbar-brand" to={"/"}>
@@ -72,9 +48,6 @@ const Header = () => {
                   Exchange
                 </NavLink>
 
-                {/* <Navbar.Collapse className="justify-content-end">
-                  <Navbar.Text> Logged in as {currUser.name}</Navbar.Text>
-                </Navbar.Collapse> */}
                 <NavLink
                   className="nav-item nav-link justify-content-end"
                   to="/profile/${currUser.uid}"
