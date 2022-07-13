@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signOut,
+  signInWithCredential,
 } from "firebase/auth";
 import {
   getFirestore,
@@ -22,25 +23,43 @@ import { getCurrUser } from "./userService";
 import { toast } from "react-toastify";
 
 // Login with google account
-const signInWithGoogle = async (onUser) => {
+const signInWithGoogle = async (setCurrUser) => {
   try {
     const res = await signInWithPopup(auth, googleProvider);
+    console.log("signInWithGoogle, res: ", res);
     const user = res.user;
-    onUser(user);
-    const q = query(collection(db, "users"), where("uid", "==", user.uid));
-    const docs = await getDocs(q);
-    if (docs.docs.length === 0) {
-      await setDoc(doc(db, "users", user.uid), {
-        uid: user.uid,
-        name: user.displayName,
-        authProvider: "google",
-        email: user.email,
-        totalPoints: user.totalPoints,
-        tasks: user.tasks,
-        rewards: user.rewards,
-      });
-    }
-    toast.success("Welcome back, " + user.displayName + "!");
+
+    const theUser = await getCurrUser(user.uid);
+    await setCurrUser(theUser);
+
+    toast.success("Hi, " + theUser.name + "!");
+  } catch (err) {
+    console.error(err);
+    toast.error(err.message);
+  }
+};
+
+const registerWithGoogle = async (setCurrUser) => {
+  try {
+    const res = await signInWithPopup(auth, googleProvider);
+    console.log("registerWithGoogle, res: ", res);
+    const user = res.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      name: user.displayName,
+      authProvider: user.providerId,
+      email: user.email,
+      totalPoints: 0,
+      tasks: [],
+      rewards: [],
+      exchangedRewards: [],
+    });
+
+    const theUser = await getCurrUser(user.uid);
+    await setCurrUser(theUser);
+
+    toast.success("Hi, " + theUser.name + "!");
   } catch (err) {
     console.error(err);
     toast.error(err.message);
@@ -130,6 +149,7 @@ const getDocumentId = async () => {
 
 export {
   signInWithGoogle,
+  registerWithGoogle,
   logInWithEmailAndPassword,
   registerWithEmailAndPassword,
   sendPasswordReset,
