@@ -9,6 +9,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { getCurrUser } from "./../../firebase/userService";
 import { UserContext } from "./../../utils/userContext";
 import "./loginForm.css";
+import { set } from "lodash";
 
 const LoginForm = (props) => {
   const [currUser, setCurrUser] = useContext(UserContext);
@@ -57,8 +58,8 @@ const LoginForm = (props) => {
         </button>
         <button
           className="login__btn login__google"
-          onCanPlay={signInWithGoogle}
-          onClick={() => setCurrUser(currUser)}
+          onClick={() => signInWithGoogle(setCurrUser)}
+          // onClick={() => setCurrUser(currUser)}
         >
           Login with Google
         </button>

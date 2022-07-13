@@ -4,6 +4,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { Link, useNavigate } from "react-router-dom";
 import {
   registerWithEmailAndPassword,
+  registerWithGoogle,
   signInWithGoogle,
 } from "../../firebase/logService";
 import "./registerForm.css";
@@ -56,7 +57,7 @@ const RegisterForm = (props) => {
         </button>
         <button
           className="register__btn register__google"
-          onClick={signInWithGoogle}
+          onClick={() => registerWithGoogle(setCurrUser)}
         >
           Register with Google
         </button>
