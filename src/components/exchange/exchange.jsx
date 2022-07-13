@@ -11,6 +11,7 @@ import "./exchange.css";
 
 function Exchange() {
   const [currUser, setCurrUser] = useContext(UserContext);
+  console.log("Exchange currUser: ", currUser);
 
   const userRewards = currUser ? currUser.rewards : [];
   const [rewards, setRewards] = useState(userRewards);

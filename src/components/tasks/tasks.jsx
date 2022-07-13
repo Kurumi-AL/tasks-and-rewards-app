@@ -1,18 +1,14 @@
 import React, { Component, useEffect, useState, useContext } from "react";
-import { db } from "../../firebase-config";
 import SearchBox from "../../elements/searchBox";
 import TasksTable from "./tasksTable";
 import Pagination from "../../elements/pagination";
 import Popup_Form from "../popup/popup_form";
-import { getTasks } from "../../services/fakeTasksData";
 import { paginate } from "./../../utils/paginate";
 import { getCurrUser } from "./../../firebase/userService";
 import { deleteTask, addPoints, updateTasks } from "../../firebase/taskService";
 import { UserContext } from "../../utils/userContext";
-import { doc } from "firebase/firestore";
 
 import _ from "lodash";
-import { getDoc } from "firebase/firestore";
 
 function Tasks() {
   const [currUser, setCurrUser] = useContext(UserContext);
@@ -29,7 +25,6 @@ function Tasks() {
 
   useEffect(() => {
     console.log("useEffect in tasks: ", currUser);
-    // setTasks(currUser.tasks);
     getPageData();
   }, [currUser, sortColumn, searchQuery]);
 

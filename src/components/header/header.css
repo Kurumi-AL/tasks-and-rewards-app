@@ -1,6 +1,10 @@
 .header {
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 0;
+}
+
+.bg-light {
+  background-color: rgb(135, 211, 135) !important;
 }
 
 .photo {
@@ -10,6 +14,17 @@
 
 .nav-button {
   border: none;
-  background-color: whitesmoke;
-  color: gray;
+  /* background-color: rgba(239, 247, 255, 0.836); */
+  background-color: transparent !important;
+  color: rgb(128, 128, 128);
+  vertical-align: center;
 }
+
+.nav-button:hover {
+  color: rgba(31, 30, 30, 0.89);
+}
+
+/* .navbar-text .logout:hover {
+  cursor: pointer !important;
+  color: rgba(0, 0, 0, 0.616) !important;
+} */
