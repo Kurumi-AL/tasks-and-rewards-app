@@ -18,6 +18,7 @@
   background-color: transparent !important;
   color: rgb(128, 128, 128);
   vertical-align: center;
+  padding-left: 0;
 }
 
 .nav-button:hover {

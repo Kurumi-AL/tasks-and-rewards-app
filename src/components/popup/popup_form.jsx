@@ -66,10 +66,11 @@ function Popup_Form(props) {
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onClose}>
+        <Button className="btn-popup" variant="secondary" onClick={onClose}>
           Close
         </Button>
         <Button
+          className="btn-popup"
           variant="success"
           onClick={
             path === "tasks"
@@ -92,10 +93,6 @@ function Popup_Form(props) {
                     onClose,
                   })
           }
-          // newName={newTitle}
-          // newPoint={newPoint}
-          // newComment={newComment}
-          // currUser={currUser}
         >
           Add!
         </Button>
