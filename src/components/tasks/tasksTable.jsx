@@ -5,6 +5,9 @@ import { doc, getDoc } from "firebase/firestore";
 import { getCurrUser } from "../../firebase/userService";
 import { UserContext } from "../../utils/userContext";
 import { deleteTask, addPoints } from "../../firebase/taskService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import "./tasksTable.css";
 
 function TasksTable({
   tasks,
@@ -43,29 +46,39 @@ function TasksTable({
       <tbody>
         {tasks.map((task) => (
           <tr key={task.timestamp}>
-            <td style={{ width: 55 + "%" }}>{task.name}</td>
+            <td style={{ width: 50 + "%" }}>{task.name}</td>
             <td className="text-end" style={{ width: 15 + "%" }}>
               {task.points} pt
             </td>
             <td className="text-center" style={{ width: 15 + "%" }}>
-              {" "}
+              <FontAwesomeIcon
+                className="fontawesome-icon"
+                onClick={() => onAddPoints({ task })}
+                icon={faPlus}
+              />
+              {/* {" "}
               <button
                 onClick={() => onAddPoints({ task })}
                 type="btn btn-sm"
                 className="btn btn-outline-dark"
               >
                 +
-              </button>
+              </button> */}
             </td>
             <td style={{ width: 15 + "%" }}>
-              {" "}
+              <FontAwesomeIcon
+                className="fontawesome-icon"
+                onClick={() => onDeleteTask({ task })}
+                icon={faMinus}
+              />
+              {/* {" "}
               <button
                 onClick={() => onDeleteTask({ task })}
                 type="btn btn-sm"
                 className="btn btn-outline-dark"
               >
                 -
-              </button>
+              </button> */}
             </td>
           </tr>
         ))}

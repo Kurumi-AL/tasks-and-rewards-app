@@ -50,7 +50,6 @@ function App() {
   return (
     <UserContext.Provider value={[currUser, setCurrUser]}>
       <ToastContainer />
-
       <Header />
 
       <div className="App">
