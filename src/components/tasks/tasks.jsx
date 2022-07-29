@@ -1,11 +1,11 @@
-import React, { Component, useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import SearchBox from "../../elements/searchBox";
 import TasksTable from "./tasksTable";
 import Pagination from "../../elements/pagination";
 import Popup_Form from "../popup/popup_form";
 import { paginate } from "./../../utils/paginate";
 import { getCurrUser } from "./../../firebase/userService";
-import { deleteTask, addPoints, updateTasks } from "../../firebase/taskService";
+import { deleteTask, addPoints } from "../../firebase/taskService";
 import { UserContext } from "../../utils/userContext";
 
 import _ from "lodash";
@@ -24,31 +24,16 @@ function Tasks() {
   const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    console.log("useEffect in tasks: ", currUser);
     getPageData();
   }, [currUser, sortColumn, searchQuery]);
 
+  // Change the status of modalOpen
   const toggleModal = async () => {
     setModalOpen(!modalOpen);
   };
 
-  const handleUpdateTasks = async ({ newTasks }) => {
-    console.log("updateTasks");
-    await updateTasks({ newTasks, currUser });
-
-    const updatedUser = await getCurrUser(currUser);
-    // await setTasks(tasks);
-  };
-
-  const updateUser = async () => {};
-
-  const handleConfirm = () => {
-    console.log("Added a new task");
-    this.toggleModal();
-  };
-
+  // Delete the task
   const handleDeleteTask = async ({ task }) => {
-    console.log("handleDeleteTask", task);
     await deleteTask({ task, currUser });
 
     const updatedUser = await getCurrUser(currUser.uid);
@@ -56,8 +41,8 @@ function Tasks() {
     getPageData();
   };
 
+  // Add points of the task
   const handleAddPoints = async ({ task }) => {
-    console.log("handleAddPoints");
     await addPoints({ task, currUser });
 
     const updatedUser = await getCurrUser(currUser.uid);
@@ -65,31 +50,25 @@ function Tasks() {
     getPageData();
   };
 
+  // Search for the query
   const handleSearch = (query) => {
     setSearchQuery(query);
     setCurrentPage(1);
   };
 
+  // Update the page information
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleAddNewTask = () => {
-    console.log("handle add new task");
-  };
-
+  // Sort the tasks
   const handleSort = (sortColumn) => {
-    console.log("handleSort");
     setSortColumn(sortColumn);
     getPageData();
   };
 
-  const handleAddTask = async ({ task }) => {
-    console.log("handleAddTask");
-  };
-
+  // Get the information for the page
   const getPageData = () => {
-    console.log("Tasks get page data", currUser);
     const tasks = currUser.tasks;
 
     if (tasks.length === 0) return;
@@ -108,7 +87,6 @@ function Tasks() {
 
     const totalCount = filtered.length;
     setTotalCount(totalCount);
-    // return { totalCount: filtered.length, data: tasks };
   };
 
   return (
@@ -124,8 +102,6 @@ function Tasks() {
               sortColumn={sortColumn}
               onDeleteTask={handleDeleteTask}
               onAddPoints={handleAddPoints}
-              // onAddPoints={addPoints}
-              // onDelete={() => deleteTask()}
               onSort={handleSort}
               getPageData={getPageData}
             />
@@ -151,13 +127,7 @@ function Tasks() {
         </button>
       </div>
 
-      <Popup_Form
-        show={modalOpen}
-        onClose={toggleModal}
-        path="tasks"
-        // currUser={currUser}
-        // onConfirm={handleTaskSubmit}
-      />
+      <Popup_Form show={modalOpen} onClose={toggleModal} path="tasks" />
     </React.Fragment>
   );
 }

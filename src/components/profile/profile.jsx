@@ -1,12 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useParams } from "react-router-dom";
+import React, { useContext } from "react";
 import { UserContext } from "../../utils/userContext";
 
 function Profile() {
   const [currUser, setCurrUser] = useContext(UserContext);
-  useEffect(() => {
-    console.log("useEffect in profile", currUser);
-  });
 
   return (
     <div className="container">

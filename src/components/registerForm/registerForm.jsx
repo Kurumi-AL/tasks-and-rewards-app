@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   registerWithEmailAndPassword,
   registerWithGoogle,
-  signInWithGoogle,
 } from "../../firebase/logService";
 import "./registerForm.css";
 import { UserContext } from "./../../utils/userContext";

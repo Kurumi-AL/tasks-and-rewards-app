@@ -3,12 +3,10 @@ import { Button } from "react-bootstrap";
 import "./popup.css";
 
 function Popup_Rewards({ show, selectedItem, onClose, onConfirm, onDelete }) {
-  console.log("Popup_Rewards: ", selectedItem);
   if (!selectedItem) return;
 
   return (
     <Modal
-      // {...props}
       show={show}
       onHide={onClose}
       size="md"
@@ -23,7 +21,6 @@ function Popup_Rewards({ show, selectedItem, onClose, onConfirm, onDelete }) {
       <Modal.Body>
         <h4>{selectedItem.name}</h4>
         <p>{selectedItem.comment}</p>
-        {/* <p>{selectedItem.genre.name}</p> */}
         <div className="row">
           <div className="col-sm-12 text-center">
             <Button className="btn-popup" onClick={onClose}>
@@ -44,9 +41,6 @@ function Popup_Rewards({ show, selectedItem, onClose, onConfirm, onDelete }) {
           </div>
         </div>
       </Modal.Body>
-      {/* <Modal.Footer>
-        <Button onClick={props.onClose}>Close</Button>
-      </Modal.Footer> */}
     </Modal>
   );
 }
