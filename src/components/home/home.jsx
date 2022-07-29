@@ -1,7 +1,7 @@
 import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import "./home.css";
 import { UserContext } from "./../../utils/userContext";
+import "./home.css";
 
 const Home = () => {
   const [currUser, setCurrUser] = useContext(UserContext);
@@ -12,6 +12,7 @@ const Home = () => {
     if (currUser) navigate("/tasks");
   }, [currUser]);
 
+  // Navigate the user to '/path'
   const routeChange = (path) => {
     let newPath = "/" + path;
     navigate(newPath);

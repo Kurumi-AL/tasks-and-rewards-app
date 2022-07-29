@@ -1,15 +1,6 @@
 import { db } from "../firebase-config";
 import { getCurrUser } from "./userService";
-import {
-  collection,
-  query,
-  where,
-  doc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  Timestamp,
-} from "firebase/firestore";
+import { doc, updateDoc, Timestamp } from "firebase/firestore";
 import { toast } from "react-toastify";
 
 // Add a new reward
@@ -21,8 +12,6 @@ export const addReward = async ({
   setCurrUser,
   onClose,
 }) => {
-  console.log("addReward");
-
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
@@ -48,14 +37,12 @@ export const addReward = async ({
     setCurrUser(updatedUser);
     onClose();
   } catch (err) {
-    console.error(err);
     toast.error(err.message);
   }
 };
 
-// Delete
+// Delete a reward
 export const deleteReward = async ({ reward, currUser }) => {
-  console.log("deleteReward: ", reward);
   const itemId = reward.timestamp.seconds;
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
@@ -70,14 +57,12 @@ export const deleteReward = async ({ reward, currUser }) => {
 
     toast.success("Deleted reward successfully!");
   } catch (err) {
-    console.error(err);
     toast.error(err.message);
   }
 };
 
 // Sub the points from the user's total points
 export const exchangeReward = async ({ reward, currUser }) => {
-  console.log("exchangeReward: ", reward);
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
@@ -93,7 +78,6 @@ export const exchangeReward = async ({ reward, currUser }) => {
 
     toast.success("Exchanged reward successfully!");
   } catch (err) {
-    console.error(err);
     toast.error(err.message);
   }
 };

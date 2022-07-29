@@ -5,23 +5,19 @@ import {
   logInWithEmailAndPassword,
   signInWithGoogle,
 } from "../../firebase/logService";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { getCurrUser } from "./../../firebase/userService";
 import { UserContext } from "./../../utils/userContext";
 import "./loginForm.css";
-import { set } from "lodash";
 
 const LoginForm = (props) => {
   const [currUser, setCurrUser] = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // const [user, loading, error] = useAuthState(auth);
-  // console.log("loginform got user from auth state", user);
-
   const navigate = useNavigate();
+
   useEffect(() => {
-    console.log("useEffect in loginForm");
+    // Navigate the user to '/tasks' if the user is logging in
     auth.onAuthStateChanged(async (user) => {
       if (user) {
         const userData = await getCurrUser(user.uid);
@@ -59,7 +55,6 @@ const LoginForm = (props) => {
         <button
           className="login__btn login__google"
           onClick={() => signInWithGoogle(setCurrUser)}
-          // onClick={() => setCurrUser(currUser)}
         >
           Login with Google
         </button>

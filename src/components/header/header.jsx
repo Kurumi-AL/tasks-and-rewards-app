@@ -1,16 +1,16 @@
 import React, { useContext } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { logout } from "../../firebase/logService";
 import logo from "../../pictures/logo.jpg";
 import { UserContext } from "./../../utils/userContext";
-import { Navbar, Container, Nav } from "react-bootstrap";
+import { Navbar, Nav } from "react-bootstrap";
 import "./header.css";
 
 const Header = () => {
   const [currUser, setCurrUser] = useContext(UserContext);
 
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar className="nav-color" expand="lg">
       <Navbar.Brand href="/">
         <img src={logo} className="photo"></img>
       </Navbar.Brand>

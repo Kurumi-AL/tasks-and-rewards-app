@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { toast } from "react-toastify";
 import { UserContext } from "../../utils/userContext";
 import { getCurrUser } from "./../../firebase/userService";
 import { exchangeReward, deleteReward } from "./../../firebase/rewardService";
@@ -9,9 +8,9 @@ import Popup_Form from "../popup/popup_form";
 import _ from "lodash";
 import "./exchange.css";
 
+// Exchange page
 function Exchange() {
   const [currUser, setCurrUser] = useContext(UserContext);
-  console.log("Exchange currUser: ", currUser);
 
   const userRewards = currUser ? currUser.rewards : [];
   const [rewards, setRewards] = useState(userRewards);
@@ -19,19 +18,18 @@ function Exchange() {
   const [sortColumn, setSortColumn] = useState({ order: "asc" });
   const [searchQuery, setSearchQuery] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    console.log("useEffect in exchange", currUser);
     getPageData();
   }, [currUser, sortColumn, searchQuery]);
 
+  // Change the status of modalOpen
   const toggleModal = async () => {
     setModalOpen(!modalOpen);
   };
 
+  // Delete the selectedItem (reward)
   const handleDeleteReward = async ({ selectedItem: reward, onClose }) => {
-    console.log("handleDeleteReward", reward);
     await deleteReward({ reward, currUser });
     onClose();
 
@@ -40,8 +38,8 @@ function Exchange() {
     getPageData();
   };
 
+  // Exchange the selectedItem (reward) with the points
   const handleExchange = async ({ selectedItem: reward, onClose }) => {
-    console.log("handleExchange", reward);
     await exchangeReward({ reward, currUser });
     onClose();
 
@@ -50,40 +48,13 @@ function Exchange() {
     getPageData();
   };
 
-  // const handleSort = (sortColumn) => {
-  //   setSortColumn(sortColumn);
-  // };
-
+  // Serach rewards by name
   const handleSearch = (query) => {
     setSearchQuery(query);
   };
 
-  // const handleAddNewReward = () => {
-  //   const isAddFormModalOpen = !isAddFormModalOpen;
-  //   setIsAddFormModalOpen(isAddFormModalOpen);
-  // };
-
-  const handleDelete = async (selectedReward) => {
-    console.log("Handle delete");
-    const originalRewards = rewards;
-    const rewards = originalRewards.filter((r) => r.id !== selectedReward.id);
-    setRewards(rewards);
-    try {
-      await deleteReward(selectedReward);
-    } catch (ex) {
-      if (ex.response && ex.response.status === 404)
-        toast.error("This reward has already been deleted.");
-
-      setRewards(originalRewards);
-    }
-  };
-
-  const handleToggleModal = (rewards) => {
-    setRewards(rewards);
-  };
-
+  // Get the page data according to the current condition
   const getPageData = () => {
-    console.log("getPageData in exchange");
     const rewards = currUser.rewards;
 
     if (rewards.length === 0) return;
@@ -96,20 +67,13 @@ function Exchange() {
       );
     const sorted = _.orderBy(filtered, ["points"], [sortColumn.order]);
     setRewards(sorted);
-
-    const length = sorted.length;
-    setTotalCount(length);
-
-    // return { totalCount: sorted.length, data: sorted };
   };
 
+  // Sort the array
   const raiseSort = () => {
-    console.log("raiseSort", sortColumn);
     sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
     setSortColumn(sortColumn);
-    console.log(sortColumn);
     getPageData();
-    // handleSort(sortColumn);
   };
 
   return (
@@ -146,17 +110,12 @@ function Exchange() {
         onDeleteReward={handleDeleteReward}
         onExchange={handleExchange}
         availablePoints={currUser.totalPoints}
-        // onDelete={handleDelete}
-        getPageData={getPageData}
-        onToggleModal={handleToggleModal}
       />
 
       <Popup_Form
         show={modalOpen}
         onClose={() => toggleModal()}
         path="rewards"
-        // currUser={currUser}
-        // genres={genres}
       />
     </div>
   );

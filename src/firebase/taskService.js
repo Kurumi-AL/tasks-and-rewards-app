@@ -1,18 +1,5 @@
 import { db } from "../firebase-config";
-import {
-  collection,
-  query,
-  where,
-  doc,
-  getDoc,
-  getDocs,
-  addDoc,
-  setDoc,
-  updateDoc,
-  Timestamp,
-} from "firebase/firestore";
-import firebaseApp from "firebase-app";
-// import Tasks from "../components/tasks/tasks";
+import { doc, updateDoc, Timestamp } from "firebase/firestore";
 import { getCurrUser } from "./userService";
 import { toast } from "react-toastify";
 
@@ -25,8 +12,6 @@ export const addTask = async ({
   setCurrUser,
   onClose,
 }) => {
-  console.log("addTask: ", currUser);
-
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
   try {
@@ -55,14 +40,12 @@ export const addTask = async ({
 
     toast.success("Added a task successfully!");
   } catch (err) {
-    console.error(err);
     toast.error(err.message);
   }
 };
 
 // Delete
 export const deleteTask = async ({ task, currUser }) => {
-  console.log("deleteTask: ", task);
   const itemId = task.timestamp.seconds;
 
   const userDoc = doc(db, "users", `${currUser.uid}`);
@@ -75,12 +58,11 @@ export const deleteTask = async ({ task, currUser }) => {
     });
     toast.success("Deleted a task successfully!");
   } catch (err) {
-    console.error(err);
     toast.error(err.message);
   }
 };
 
-// Add point to the user account
+// Add points to the user account
 export const addPoints = async ({ task, currUser }) => {
   const userDoc = doc(db, "users", `${currUser.uid}`);
 
@@ -92,7 +74,6 @@ export const addPoints = async ({ task, currUser }) => {
     });
     toast.success("Added points successfully!");
   } catch (err) {
-    console.error(err);
     toast.error(err.message);
   }
 };
@@ -106,7 +87,6 @@ export const updateTasks = async ({ tasks, currUser }) => {
       tasks: tasks,
     });
   } catch (err) {
-    console.error(err);
     toast.error(err.message);
   }
 };

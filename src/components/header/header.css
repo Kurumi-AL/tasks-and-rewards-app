@@ -1,10 +1,10 @@
+.nav-color {
+  background-color: rgb(221, 248, 221);
+}
+
 .header {
   margin: 0;
   padding: 0 0 0 0;
-}
-
-.bg-light {
-  background-color: rgb(135, 211, 135) !important;
 }
 
 .photo {
@@ -24,8 +24,3 @@
 .nav-button:hover {
   color: rgba(31, 30, 30, 0.89);
 }
-
-/* .navbar-text .logout:hover {
-  cursor: pointer !important;
-  color: rgba(0, 0, 0, 0.616) !important;
-} */

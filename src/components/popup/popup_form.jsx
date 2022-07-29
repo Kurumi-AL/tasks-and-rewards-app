@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { Modal } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { Form } from "react-bootstrap";
@@ -16,13 +16,8 @@ function Popup_Form(props) {
   const [newPoint, setNewPoint] = useState(0);
   const [newComment, setNewComment] = useState("");
 
-  // console.log("Popup_Form user: ", currUser);
-
   return (
     <Modal show={props.show} onHide={onClose}>
-      {/* <Modal.Header closeButton>
-        <Modal.Title></Modal.Title>
-      </Modal.Header> */}
       <Modal.Body>
         <Form>
           <Form.Group className="mb-3" controlId="popupForm.name">
@@ -55,14 +50,6 @@ function Popup_Form(props) {
               }}
             />
           </Form.Group>
-          {/* <Form.Group controlId="popupForm.genre">
-            <Form.Label>Genre</Form.Label>
-            <Form.Control as="select">
-              {props.genres.map((g) => (
-                <option key={g.id}>{g.name}</option>
-              ))}
-            </Form.Control>
-          </Form.Group> */}
         </Form>
       </Modal.Body>
       <Modal.Footer>
