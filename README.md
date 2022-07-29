@@ -15,8 +15,8 @@ A simple to-do app where you can earn points to exchange with some rewards creat
 
 ## General info
 
-I created this app to learn React.js and Firebase outside school, and I also wanted something to motivate me and my husband to workout more.
-I followed Mastering React program taught by [Code with Mosh](https://codewithmosh.com/)
+I created this app to learn React.js and Firebase outside school, and I also wanted something to motivate me and my husband to workout more.  
+I followed Mastering React program taught by [Code with Mosh](https://codewithmosh.com/) to learn React.js.
 ![Code with Mosh Certificate](./img/certificate-of-completion-for-mastering-react.png)
 
 ## Technologies
@@ -29,5 +29,5 @@ I followed Mastering React program taught by [Code with Mosh](https://codewithmo
 
 ## Setup
 
-In the project directly, you can runs the app in the development mode with: `npm start`
+In the project directly, you can runs the app in the development mode with: `npm start`  
 Please open [http://localhost:3000](http://localhost:3000) to view it in your browser.
