@@ -1,15 +1,15 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "@firebase/firestore";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
-
+console.log(process.env.REACT_APP_API_KEY);
 const firebaseConfig = {
-  apiKey: "AIzaSyDGVdQ1IDptSonL2MPGxxG5o6FoqQTCeto",
-  authDomain: "tasks-and-rewards.firebaseapp.com",
-  projectId: "tasks-and-rewards",
-  storageBucket: "tasks-and-rewards.appspot.com",
-  messagingSenderId: "691976205595",
-  appId: "1:691976205595:web:463bc6743ec507bf9fcfbe",
-  measurementId: "G-5VHXPD1MHC",
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
