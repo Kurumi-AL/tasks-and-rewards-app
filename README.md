@@ -1,10 +1,25 @@
-# Getting Started with Create React App
+# Tasks and Rewards App - To-do and points exchange app
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A simple to-do app where you can earn points to exchange with some rewards created with React.js, Firebase, and Bootstrap.
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [Demo](#demo)
+- [General info](#general-info)
+- [Technologies](#technologies)
+- [Setup](#setup)
+
+## Demo
+
+## General info
+
+I created this app to learn React.js and Firebase outside school, and I also wanted something to motivate me and my husband to workout more.
+I followed Mastering React program taught by [Code with Mosh](https://codewithmosh.com/)
+![Code with Mosh Certificate](./img/certificate-of-completion-for-mastering-react.pdf)
+
+## Technologies
+
+## Setup
 
 ### `npm start`
 
