@@ -1,6 +1,7 @@
 # Tasks and Rewards App - To-do and points exchange app
 
-A to-do app where you can earn points to exchange for rewards. Created with React.js, Firebase, and Bootstrap.
+A to-do app where you can earn points to exchange for rewards.  
+Created with React.js, HTML, CSS, Firebase, and Bootstrap.
 
 ## Table of Contents
 
