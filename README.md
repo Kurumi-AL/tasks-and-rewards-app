@@ -31,5 +31,6 @@ I followed the Mastering React program taught by [Code with Mosh](https://codewi
 
 ## Setup
 
-In the project, you can run the app in development mode with: `npm start`  
+First, install the packages for the project with `npm install`.
+You can run the app in development mode with: `npm start`  
 Please open [http://localhost:3000](http://localhost:3000) to view it in your browser.
