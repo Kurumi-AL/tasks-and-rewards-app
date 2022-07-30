@@ -16,19 +16,20 @@ Created with React.js, HTML, CSS, Firebase, and Bootstrap.
 
 ## General info
 
-I created this app to learn React.js and Firebase outside school, and I also wanted something to motivate me and my husband to workout more.  
-I followed Mastering React program taught by [Code with Mosh](https://codewithmosh.com/) to learn React.js.
+I created this app to learn React.js and Firebase outside of school. I also wanted something to motivate my husband and I to workout more.  
+I followed the Mastering React program taught by [Code with Mosh](https://codewithmosh.com/) to learn React.js.
 ![Code with Mosh Certificate](./img/certificate-of-completion-for-mastering-react.png)
 
 ## Technologies
 
 - React.js
 - Firebase (Firestore Database, Authentication)
-- Bootstrap (react-bootstrap, bootstrap)
+- JavaScript
 - HTML
-- CSS
+- CSS 
+- Bootstrap (react-bootstrap, bootstrap)
 
 ## Setup
 
-In the project directly, you can runs the app in the development mode with: `npm start`  
+In the project, you can run the app in development mode with: `npm start`  
 Please open [http://localhost:3000](http://localhost:3000) to view it in your browser.
